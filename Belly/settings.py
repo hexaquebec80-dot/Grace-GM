@@ -301,30 +301,9 @@ LOGIN_REDIRECT_URL = "/cart/"
 
 
 
-
-# --------------------------------------------------
-# CLOUDINARY
-# --------------------------------------------------
-
-CLOUDINARY_CLOUD_NAME = config(
-    "CLOUDINARY_CLOUD_NAME",
-    default="",
-)
-
-CLOUDINARY_API_KEY = config(
-    "CLOUDINARY_API_KEY",
-    default="",
-)
-
-CLOUDINARY_API_SECRET = config(
-    "CLOUDINARY_API_SECRET",
-    default="",
-)
-
-import cloudinary
-
-cloudinary.config(
-    cloud_name=CLOUDINARY_CLOUD_NAME,
-    api_key=CLOUDINARY_API_KEY,
-    api_secret=CLOUDINARY_API_SECRET,
-)
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": config("CLOUDINARY_CLOUD_NAME"),
+    "API_KEY": config("CLOUDINARY_API_KEY"),
+    "API_SECRET": config("CLOUDINARY_API_SECRET"),
+    "SECURE": True,
+}
