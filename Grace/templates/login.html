@@ -1,0 +1,380 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - GafouShop</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        :root{
+            --green:#164110;
+            --green2:#2f7d32;
+            --cream:#fffaf3;
+            --soft:#eef7e8;
+            --dark:#1f2937;
+            --muted:#6b7280;
+            --red:#dc2626;
+        }
+
+        *{
+            box-sizing:border-box;
+        }
+
+        body{
+            margin:0;
+            min-height:100vh;
+            font-family:'Poppins', Arial, sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(22,65,16,.18), transparent 35%),
+                radial-gradient(circle at bottom right, rgba(47,125,50,.16), transparent 32%),
+                linear-gradient(135deg,var(--cream),var(--soft));
+        }
+
+        .login-wrapper{
+            min-height:100vh;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:35px 15px;
+        }
+
+        .login-container{
+            width:100%;
+            max-width:1050px;
+            display:grid;
+            grid-template-columns:1fr 430px;
+            gap:35px;
+            align-items:center;
+        }
+
+        .login-intro{
+            padding:35px;
+        }
+
+        .intro-badge{
+            display:inline-block;
+            background:#fff;
+            color:var(--green);
+            padding:10px 20px;
+            border-radius:50px;
+            font-weight:900;
+            box-shadow:0 12px 35px rgba(22,65,16,.12);
+            margin-bottom:18px;
+        }
+
+        .intro-title{
+            color:var(--green);
+            font-size:clamp(2.5rem,5vw,4.6rem);
+            font-weight:900;
+            line-height:1.05;
+            margin-bottom:20px;
+        }
+
+        .intro-text{
+            color:var(--muted);
+            font-size:1.1rem;
+            line-height:1.8;
+            max-width:520px;
+        }
+
+        .login-card-area{
+            width:100%;
+        }
+
+        .logos{
+    width:180px;
+    height:180px;
+    display:block;
+    margin:0 auto 30px;
+    object-fit:cover;
+
+    border-radius:50%;
+
+    background:#fff;
+    padding:10px;
+
+    border:4px solid #ffffff;
+
+    box-shadow:
+        0 15px 35px rgba(22,65,16,.20),
+        0 0 0 6px rgba(22,65,16,.08);
+
+    transition:.3s ease;
+}
+
+.logos:hover{
+    transform:scale(1.05);
+}
+        .login-box{
+            background:rgba(255,255,255,.95);
+            backdrop-filter:blur(16px);
+            border-radius:34px;
+            padding:36px;
+            box-shadow:0 30px 80px rgba(22,65,16,.16);
+            border:1px solid rgba(22,65,16,.10);
+        }
+
+        .login-box h1{
+            color:var(--green);
+            font-size:32px;
+            font-weight:900;
+            text-align:center;
+            margin-bottom:8px;
+        }
+
+        .login-subtitle{
+            color:var(--muted);
+            text-align:center;
+            margin-bottom:28px;
+        }
+
+        label{
+            color:var(--dark);
+            font-weight:800;
+            font-size:14px;
+            margin-bottom:8px;
+            display:block;
+        }
+
+        .form-control{
+            height:54px;
+            border-radius:16px;
+            border:1px solid #d8e6d3;
+            background:#f9fafb;
+            padding:12px 16px;
+            font-weight:600;
+        }
+
+        .form-control:focus{
+            border-color:var(--green);
+            box-shadow:0 0 0 4px rgba(22,65,16,.12);
+            background:#fff;
+        }
+
+        .btn-signin{
+            width:100%;
+            height:56px;
+            border:none;
+            border-radius:50px;
+            background:linear-gradient(135deg,var(--green),var(--green2));
+            color:white;
+            font-size:16px;
+            font-weight:900;
+            margin-top:8px;
+            box-shadow:0 15px 35px rgba(22,65,16,.25);
+            transition:.3s;
+        }
+
+        .btn-signin:hover{
+            transform:translateY(-4px);
+            box-shadow:0 22px 45px rgba(22,65,16,.33);
+        }
+
+        .small-link{
+            color:var(--green);
+            font-size:14px;
+            font-weight:800;
+            text-decoration:none;
+        }
+
+        .small-link:hover{
+            color:var(--green2);
+            text-decoration:underline;
+        }
+
+        .error-box{
+            background:#fee2e2;
+            color:#b91c1c;
+            border:1px solid #fecaca;
+            padding:14px;
+            border-radius:16px;
+            margin-bottom:18px;
+            text-align:center;
+            font-size:14px;
+            font-weight:800;
+        }
+
+        .help-text{
+            font-size:13px;
+            color:var(--muted);
+            margin-top:20px;
+            line-height:1.6;
+            text-align:center;
+        }
+
+        .create-box{
+            margin-top:20px;
+            text-align:center;
+        }
+
+        .create-box p{
+            color:var(--muted);
+            font-size:14px;
+            margin-bottom:10px;
+        }
+
+        .create-btn{
+            width:100%;
+            padding:15px 18px;
+            border-radius:50px;
+            border:2px solid var(--green);
+            background:white;
+            color:var(--green);
+            text-decoration:none;
+            font-weight:900;
+            display:inline-block;
+            transition:.3s;
+            box-shadow:0 12px 30px rgba(22,65,16,.08);
+        }
+
+        .create-btn:hover{
+            background:var(--green);
+            color:white;
+            transform:translateY(-3px);
+        }
+
+        .footer{
+            text-align:center;
+            font-size:13px;
+            color:var(--muted);
+            padding:20px;
+        }
+
+        @media(max-width:900px){
+            .login-container{
+                grid-template-columns:1fr;
+                max-width:460px;
+            }
+
+            .login-intro{
+                text-align:center;
+                padding:10px;
+            }
+
+            .intro-text{
+                margin:auto;
+            }
+        }
+
+        @media(max-width:500px){
+            .login-wrapper{
+                padding:25px 14px;
+            }
+
+            .login-box{
+                padding:26px 20px;
+                border-radius:28px;
+            }
+
+            .intro-title{
+                font-size:2.4rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-wrapper">
+
+    <div class="login-container">
+
+        <div class="login-intro">
+            <span class="intro-badge">Boutique naturelle & bien-être</span>
+
+            <h2 class="intro-title">
+                Bienvenue sur Belly Fat Burner By Grace
+            </h2>
+
+            <p class="intro-text">
+                Connectez-vous à votre espace client pour suivre vos commandes,
+                gérer votre panier et découvrir nos produits premium.
+            </p>
+        </div>
+
+        <div class="login-card-area">
+
+            <img src="{% static 'images/logoBelly.png' %}" class="logos" alt="GafouShop Logo">
+
+            <div class="login-box">
+
+                <h1>Connexion</h1>
+                <p class="login-subtitle">Accédez à votre compte client</p>
+
+                {% if error %}
+                    <div class="error-box">
+                        {{ error }}
+                    </div>
+                {% endif %}
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="error-box">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <label>Email ou nom d'utilisateur</label>
+                    <input
+                        class="form-control mb-3"
+                        type="text"
+                        name="username"
+                        placeholder="Entrez votre email ou identifiant"
+                        required
+                    >
+
+                    <label>Mot de passe</label>
+                    <input
+                        class="form-control mb-3"
+                        type="password"
+                        name="password"
+                        placeholder="Entrez votre mot de passe"
+                        required
+                    >
+
+                    <button type="submit" class="btn-signin">
+                        Se connecter
+                    </button>
+                </form>
+
+                <div class="text-center mt-3">
+                    <a href="#" class="small-link">
+                        Mot de passe oublié ?
+                    </a>
+                </div>
+
+                <p class="help-text">
+                    En continuant, vous acceptez les conditions et politiques de Belly Fat Burner By Grace.
+                </p>
+
+            </div>
+
+            <div class="create-box">
+                <p>Nouveau client ?</p>
+
+                <a href="{% url 'register' %}" class="create-btn">
+                    Créer votre compte Belly Fat Burner By Grace
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="footer">
+    © 2026 Belly Fat Burner By Grace - Tous droits réservés
+</div>
+
+</body>
+</html>

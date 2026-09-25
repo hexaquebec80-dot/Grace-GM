@@ -1,0 +1,468 @@
+{% extends 'base.html' %}
+
+{% block title %}Paiements | Administration Grace GM{% endblock %}
+
+{% block content %}
+<style>
+.pay-page {
+    min-height: 100vh;
+    padding: 38px 18px 76px;
+    background: linear-gradient(135deg, #fffafa, #fff2f8);
+    font-family: Arial, sans-serif;
+    color: #332a30;
+}
+
+.pay-wrap {
+    max-width: 1320px;
+    margin: auto;
+}
+
+.pay-nav {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 12px;
+    margin-bottom: 25px;
+    background: #fff;
+    border: 1px solid #eedce5;
+    border-radius: 18px;
+}
+
+.pay-nav a {
+    white-space: nowrap;
+    padding: 11px 15px;
+    border-radius: 10px;
+    color: #655760;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.pay-nav a.active,
+.pay-nav a:hover {
+    background: #51203a;
+    color: #fff;
+}
+
+.pay-hero {
+    padding: 33px 36px;
+    margin-bottom: 23px;
+    border-radius: 24px;
+    background: linear-gradient(125deg, #171117, #61223e);
+    color: #fff;
+}
+
+.pay-hero small {
+    color: #f9b8d5;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.pay-hero h1 {
+    margin: 9px 0;
+    font-size: clamp(29px, 4vw, 42px);
+}
+
+.pay-hero p {
+    color: #f4dfe9;
+    margin: 0;
+}
+
+.pay-stats {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 13px;
+    margin-bottom: 24px;
+}
+
+.pay-stat {
+    padding: 19px;
+    background: #fff;
+    border: 1px solid #eedce5;
+    border-radius: 17px;
+    box-shadow: 0 8px 22px rgba(81, 32, 58, .05);
+}
+
+.pay-stat span {
+    display: block;
+    color: #7e6d76;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.pay-stat strong {
+    display: block;
+    margin-top: 11px;
+    color: #24151e;
+    font-size: clamp(21px, 2vw, 30px);
+    overflow-wrap: anywhere;
+}
+
+.pay-stat.total strong {
+    color: #9b255b;
+}
+
+.pay-stat.failed strong {
+    color: #c52d45;
+}
+
+.pay-card {
+    background: #fff;
+    border: 1px solid #eedce5;
+    border-radius: 21px;
+    overflow: hidden;
+    box-shadow: 0 14px 32px rgba(81, 32, 58, .07);
+}
+
+.pay-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 22px 24px;
+    border-bottom: 1px solid #f2e6ec;
+}
+
+.pay-heading h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.pay-count {
+    font-size: 13px;
+    color: #786974;
+}
+
+.pay-tools {
+    padding: 17px 24px;
+    border-bottom: 1px solid #f2e6ec;
+}
+
+.pay-search {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 440px;
+    padding: 13px 15px;
+    border: 1px solid #e9d5e0;
+    border-radius: 11px;
+    font: inherit;
+    outline: 0;
+}
+
+.pay-search:focus {
+    border-color: #c43878;
+}
+
+.pay-scroll {
+    overflow-x: auto;
+}
+
+.pay-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 840px;
+}
+
+.pay-table th {
+    text-align: left;
+    padding: 16px 20px;
+    background: #fff9fc;
+    color: #776772;
+    font-size: 12px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+.pay-table td {
+    padding: 17px 20px;
+    border-top: 1px solid #f2e8ed;
+}
+
+.pay-table tbody tr:hover {
+    background: #fffafd;
+}
+
+.pay-primary {
+    display: block;
+    font-weight: 800;
+    color: #251720;
+}
+
+.pay-secondary {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: #877780;
+}
+
+.pay-amount {
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.pay-badge {
+    display: inline-block;
+    padding: 7px 11px;
+    border-radius: 22px;
+    color: #187641;
+    background: #eaf8ef;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.pay-link {
+    display: inline-block;
+    padding: 9px 12px;
+    border-radius: 9px;
+    background: #f8e9f0;
+    color: #982454;
+    font-size: 12px;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.pay-link:hover {
+    background: #eed1df;
+}
+
+.pay-empty {
+    padding: 60px 20px;
+    text-align: center;
+    color: #83727b;
+}
+
+.pay-empty strong {
+    display: block;
+    color: #271b23;
+    font-size: 19px;
+    margin-bottom: 8px;
+}
+
+.pay-hidden {
+    display: none !important;
+}
+
+@media (max-width: 900px) {
+    .pay-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .pay-stat.total {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 550px) {
+    .pay-hero {
+        padding: 27px 22px;
+    }
+
+    .pay-stat {
+        padding: 15px;
+    }
+}
+</style>
+
+<main class="pay-page">
+    <div class="pay-wrap">
+
+        <nav class="pay-nav" aria-label="Administration">
+            <a href="{% url 'admin_dashboard' %}">
+                Tableau de bord
+            </a>
+
+            <a href="{% url 'admin_products' %}">
+                Produits
+            </a>
+
+            <a href="{% url 'admin_orders' %}">
+                Commandes
+            </a>
+
+            <a href="{% url 'admin_payments' %}"
+               class="active"
+               aria-current="page">
+                Paiements
+            </a>
+
+            <a href="{% url 'home' %}">
+                Boutique
+            </a>
+        </nav>
+
+        <header class="pay-hero">
+            <small>ADMINISTRATION GRACE GM</small>
+            <h1>Paiements</h1>
+            <p>
+                Suivez les commandes réglées et le montant encaissé.
+            </p>
+        </header>
+
+        <section class="pay-stats" aria-label="Résumé des paiements">
+            <div class="pay-stat total">
+                <span>Montant encaissé</span>
+                <strong>
+                    {{ total_amount|floatformat:2 }} $ CA
+                </strong>
+            </div>
+
+            <div class="pay-stat">
+                <span>Paiements confirmés</span>
+                <strong>{{ paid_count|default:0 }}</strong>
+            </div>
+
+            <div class="pay-stat">
+                <span>En attente</span>
+                <strong>{{ pending_count|default:0 }}</strong>
+            </div>
+
+            <div class="pay-stat failed">
+                <span>Échoués</span>
+                <strong>{{ failed_count|default:0 }}</strong>
+            </div>
+
+            <div class="pay-stat">
+                <span>Remboursés</span>
+                <strong>{{ refunded_count|default:0 }}</strong>
+            </div>
+        </section>
+
+        <section class="pay-card">
+
+            <div class="pay-heading">
+                <h2>Paiements confirmés</h2>
+                <span class="pay-count" id="pay-counter"></span>
+            </div>
+
+            <div class="pay-tools">
+                <input
+                    id="pay-search"
+                    class="pay-search"
+                    type="search"
+                    placeholder="Rechercher une commande, un nom ou un courriel…"
+                    aria-label="Rechercher un paiement">
+            </div>
+
+            <div class="pay-scroll">
+                <table class="pay-table">
+                    <thead>
+                        <tr>
+                            <th>Commande</th>
+                            <th>Client</th>
+                            <th>Date de commande</th>
+                            <th>Montant</th>
+                            <th>Statut</th>
+                            <th>Détails</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for order in payments %}
+                            <tr
+                                class="pay-row"
+                                data-search="{{ order.id }} {{ order.prenom|lower }} {{ order.nom|lower }} {{ order.email|lower }}">
+
+                                <td>
+                                    <span class="pay-primary">
+                                        #{{ order.id }}
+                                    </span>
+
+                                    {% if order.transaction_id %}
+                                        <span
+                                            class="pay-secondary"
+                                            title="{{ order.transaction_id }}">
+                                            Référence enregistrée
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    <span class="pay-primary">
+                                        {{ order.prenom }} {{ order.nom }}
+                                    </span>
+
+                                    <span class="pay-secondary">
+                                        {{ order.email }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    {{ order.created_at|date:'d/m/Y à H:i' }}
+                                </td>
+
+                                <td class="pay-amount">
+                                    {{ order.total|floatformat:2 }} $ CA
+                                </td>
+
+                                <td>
+                                    <span class="pay-badge">Payé</span>
+                                </td>
+
+                                <td>
+                                    <a
+                                        class="pay-link"
+                                        href="{% url 'admin_order_detail' order.id %}">
+                                        Voir la commande
+                                    </a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6">
+                                    <div class="pay-empty">
+                                        <strong>
+                                            Aucun paiement confirmé
+                                        </strong>
+                                        Les commandes payées apparaîtront ici.
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div
+                class="pay-empty pay-hidden"
+                id="pay-no-result">
+                <strong>Aucun résultat</strong>
+                Essayez un autre nom ou numéro de commande.
+            </div>
+
+        </section>
+    </div>
+</main>
+
+<script>
+(() => {
+    const field = document.getElementById('pay-search');
+    const rows = [...document.querySelectorAll('.pay-row')];
+    const counter = document.getElementById('pay-counter');
+    const noResult = document.getElementById('pay-no-result');
+
+    function update() {
+        const query = field.value.trim().toLocaleLowerCase();
+        let visible = 0;
+
+        for (const row of rows) {
+            const show = row.dataset.search.includes(query);
+            row.classList.toggle('pay-hidden', !show);
+
+            if (show) {
+                visible++;
+            }
+        }
+
+        counter.textContent =
+            `${visible} paiement${visible > 1 ? 's' : ''}`;
+
+        noResult.classList.toggle(
+            'pay-hidden',
+            visible !== 0 || rows.length === 0
+        );
+    }
+
+    field.addEventListener('input', update);
+    update();
+})();
+</script>
+{% endblock %}

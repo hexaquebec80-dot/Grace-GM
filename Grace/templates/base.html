@@ -1,0 +1,1185 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Grace GM | Flat Tummy Tea{% endblock %}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #164110;
+            --secondary: #51731a;
+            --gold: #cba451;
+            --dark: #10230d;
+            --border: #e7eadf;
+            --danger: #b42332;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            color: #1b2a1b;
+            background: linear-gradient(180deg, #fffefa, #f8faf5 55%, #fffdfa);
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        a { text-decoration: none; }
+
+        /* Barre supérieure */
+        .top-bar {
+            padding: 8px 0;
+            color: #fff;
+            background: #143c12;
+            font-size: 13px;
+        }
+
+        .top-bar-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        /* Menu original */
+        .custom-navbar {
+            background: rgba(255, 255, 255, .96);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 10px 30px rgba(22, 65, 16, .10);
+            transition: box-shadow .3s;
+        }
+
+        .custom-navbar.scrolled {
+            box-shadow: 0 18px 45px rgba(22, 65, 16, .18);
+        }
+
+        .custom-navbar .container {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .logo-img {
+            width: 70px;
+            height: 70px;
+            padding: 5px;
+            border-radius: 18px;
+            background: #fff;
+            object-fit: contain;
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+            margin-left: 10px;
+            color: var(--primary);
+            font-size: 20px;
+            font-weight: 900;
+            line-height: 1.05;
+            white-space: nowrap;
+        }
+
+        .brand-text small {
+            margin-top: 6px;
+            color: #7a6670;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: .14em;
+        }
+
+        .search-form {
+            display: flex;
+            width: 100%;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .search-input {
+            width: 100%;
+            min-height: 47px;
+            padding: 12px 18px;
+            border: 1px solid #e0e8d9;
+            border-radius: 999px;
+            background: #f7f8f3;
+        }
+
+        .search-input:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 4px rgba(81, 115, 26, .15);
+            background: #fff;
+        }
+
+        .btn-search {
+            display: grid;
+            place-items: center;
+            width: 48px;
+            min-width: 48px;
+            min-height: 47px;
+            margin-left: 8px;
+            border: 0;
+            border-radius: 50%;
+            color: #fff;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .btn-search:hover {
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(22, 65, 16, .22);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .user-box {
+            min-width: 75px;
+            text-align: center;
+            line-height: 1.35;
+        }
+
+        .user-icon {
+            display: inline-grid;
+            place-items: center;
+            width: 44px;
+            height: 44px;
+            margin-bottom: 3px;
+            border-radius: 50%;
+            color: var(--primary);
+            background: #eef4e8;
+        }
+
+        .user-icon:hover {
+            color: var(--primary);
+            background: #dcebcf;
+        }
+
+        .user-name {
+            color: #334155;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .login-link {
+            display: block;
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .logout-link {
+            display: block;
+            color: var(--danger);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .admin-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-management-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            min-height: 46px;
+            padding: 11px 19px;
+            border-radius: 999px;
+            color: #fff;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            box-shadow: 0 12px 26px rgba(22, 65, 16, .23);
+            font-size: 13px;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .admin-management-link:hover {
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .admin-user-box {
+            min-width: 74px;
+            text-align: center;
+        }
+
+        .admin-user-name {
+            display: block;
+            color: var(--primary);
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+        /* Panier original et compteur */
+        .cart-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            min-width: 48px;
+            height: 48px;
+            border: 1px solid #e6ebdf;
+            border-radius: 50%;
+            color: var(--primary);
+            background: #fff;
+            box-shadow: 0 8px 20px rgba(22, 65, 16, .12);
+        }
+
+        .cart-icon:hover {
+            color: var(--primary);
+            background: #eef4e8;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -7px;
+            right: -9px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 23px;
+            height: 23px;
+            padding: 2px 7px;
+            border: 2px solid #fff;
+            border-radius: 999px;
+            color: #111;
+            background: var(--gold);
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+        .cart-badge.is-empty {
+            opacity: 0;
+            transform: scale(.55);
+            pointer-events: none;
+        }
+
+        .cart-badge.cart-bump {
+            animation: cart-bump .48s;
+        }
+
+        @keyframes cart-bump {
+            50% { transform: scale(1.4); }
+        }
+
+        .messages-container {
+            position: fixed;
+            top: 110px;
+            left: 50%;
+            z-index: 1090;
+            width: min(92%, 650px);
+            transform: translateX(-50%);
+        }
+
+        .site-message {
+            border: 0;
+            border-radius: 17px;
+            box-shadow: 0 16px 40px rgba(15, 35, 13, .17);
+        }
+
+        .main-content {
+            min-height: 60vh;
+            padding-top: 12px;
+        }
+
+        /* Connexion */
+        .login-modern {
+            overflow: hidden;
+            border: 0;
+            border-radius: 26px;
+            background: #fffdfa;
+            box-shadow: 0 30px 80px rgba(15, 23, 42, .25);
+        }
+
+        .login-modern .modal-body { padding: 32px; }
+        .login-modern h4 { color: var(--primary); font-weight: 900; }
+
+        .login-modern .form-control {
+            min-height: 49px;
+            padding: 12px 15px;
+            border: 1px solid #dde6d8;
+            border-radius: 14px;
+            background: #fbfcf9;
+        }
+
+        .login-password { position: relative; }
+        .login-password .form-control { padding-right: 52px; }
+
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 8px;
+            width: 39px;
+            height: 39px;
+            border: 0;
+            border-radius: 11px;
+            color: var(--primary);
+            background: transparent;
+            transform: translateY(-50%);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 13px;
+            border: 0;
+            border-radius: 999px;
+            color: #fff;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            font-weight: 800;
+        }
+
+        /* Footer original */
+        .footer {
+            position: relative;
+            overflow: hidden;
+            margin-top: 65px;
+            padding: 80px 20px 25px;
+            color: #fff;
+            background: linear-gradient(145deg, #112d10, #071b09);
+        }
+
+        .footer::before {
+            content: "";
+            position: absolute;
+            top: -260px;
+            right: -180px;
+            width: 520px;
+            height: 520px;
+            border-radius: 50%;
+            background: rgba(203, 164, 81, .12);
+            filter: blur(90px);
+        }
+
+        .footer .container { position: relative; z-index: 2; }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 2fr) minmax(145px, 1fr) minmax(175px, 1fr);
+            gap: 28px;
+        }
+
+        .footer-brand {
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, .09);
+            border-radius: 28px;
+            background: rgba(255, 255, 255, .05);
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .footer-logo img {
+            width: 62px;
+            height: 62px;
+            padding: 7px;
+            border-radius: 18px;
+            background: #fff;
+            object-fit: contain;
+        }
+
+        .footer-logo h2 {
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            color: var(--gold);
+            font-size: 25px;
+            font-weight: 900;
+        }
+
+        .footer-logo h2 small {
+            margin-top: 7px;
+            color: #d9e6d1;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .12em;
+        }
+
+        .footer h5 {
+            margin-bottom: 20px;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        .footer p, .footer-links a {
+            color: #dbe5d0;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .footer-links a {
+            display: block;
+            margin-bottom: 13px;
+        }
+
+        .footer-links a:hover { color: var(--gold); }
+
+        .payment-icons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .payment-icons img {
+            width: 72px;
+            height: 44px;
+            padding: 8px;
+            border-radius: 14px;
+            background: #fff;
+            object-fit: contain;
+        }
+
+        .hexa-section {
+            margin-top: 55px;
+            padding: 28px;
+            border: 1px solid rgba(255, 255, 255, .09);
+            border-radius: 28px;
+            text-align: center;
+            background: rgba(255, 255, 255, .05);
+        }
+
+        .hexa-logo { width: 90px; margin-bottom: 15px; }
+
+        .hexa-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 24px;
+            border-radius: 999px;
+            color: #fff;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            font-weight: 800;
+        }
+
+        .hexa-link:hover { color: #fff; }
+
+        .footer-bottom {
+            margin-top: 35px;
+            padding-top: 22px;
+            border-top: 1px solid rgba(255, 255, 255, .1);
+            color: #b8c5ad;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        /* Assistante Diam IA */
+        .diam-launch {
+            position: fixed;
+            right: 18px;
+            bottom: 14px;
+            z-index: 1040;
+            width: 115px;
+            height: 152px;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            cursor: pointer;
+            filter: drop-shadow(0 8px 12px rgba(20, 45, 18, .3));
+        }
+
+        .diam-launch img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: bottom;
+            transition: transform .2s;
+        }
+
+        .diam-launch:hover img { transform: translateY(-5px); }
+
+        .diam-launch-label {
+            position: absolute;
+            right: 80px;
+            bottom: 25px;
+            padding: 9px 13px;
+            border-radius: 15px 15px 4px 15px;
+            background: #fff;
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: 800;
+            white-space: nowrap;
+            box-shadow: 0 9px 24px rgba(20, 45, 18, .2);
+        }
+
+        .diam-panel {
+            position: fixed;
+            right: 22px;
+            bottom: 172px;
+            z-index: 1041;
+            display: flex;
+            flex-direction: column;
+            width: min(390px, calc(100vw - 28px));
+            height: min(560px, calc(100dvh - 210px));
+            min-height: 300px;
+            overflow: hidden;
+            border: 1px solid #dcead7;
+            border-radius: 20px;
+            background: #fff;
+            box-shadow: 0 20px 65px rgba(16, 35, 13, .3);
+        }
+
+        .diam-panel[hidden] { display: none !important; }
+
+        .diam-head {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 16px;
+            background: linear-gradient(120deg, #10230d, #2f7d32);
+            color: #fff;
+        }
+
+        .diam-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #eef4e8;
+            object-fit: cover;
+            object-position: top;
+        }
+
+        .diam-head-copy { flex: 1; min-width: 0; }
+        .diam-head-copy strong { display: block; font-size: 15px; }
+        .diam-head-copy small { color: #e2f3dc; font-size: 11px; }
+
+        .diam-close {
+            padding: 4px 8px;
+            border: 0;
+            border-radius: 7px;
+            background: rgba(255, 255, 255, .16);
+            color: #fff;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .diam-log {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            padding: 18px;
+            background: #f8faf5;
+        }
+
+        .diam-bubble {
+            max-width: 86%;
+            padding: 12px 14px;
+            border-radius: 15px;
+            font-size: 13px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .diam-bubble.bot {
+            align-self: flex-start;
+            border: 1px solid #dcead7;
+            border-bottom-left-radius: 4px;
+            background: #fff;
+            color: #1b2a1b;
+        }
+
+        .diam-bubble.user {
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .diam-quick {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            padding: 10px 14px;
+            background: #fff;
+        }
+
+        .diam-quick button {
+            padding: 7px 10px;
+            border: 1px solid #dcead7;
+            border-radius: 18px;
+            background: #f2f8ed;
+            color: var(--primary);
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .diam-form {
+            display: flex;
+            gap: 9px;
+            padding: 12px;
+            border-top: 1px solid #dcead7;
+            background: #fff;
+        }
+
+        .diam-form input {
+            flex: 1;
+            min-width: 0;
+            padding: 11px 12px;
+            border: 1px solid #dcead7;
+            border-radius: 11px;
+            font-size: 13px;
+            outline: 0;
+        }
+
+        .diam-form input:focus { border-color: var(--primary); }
+
+        .diam-form button {
+            padding: 0 14px;
+            border: 0;
+            border-radius: 11px;
+            background: var(--primary);
+            color: #fff;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        @media (max-width: 991px) {
+            .custom-navbar .container { flex-wrap: wrap; }
+            .navbar-brand { order: 1; }
+            .nav-actions { order: 2; margin-left: auto; }
+            .search-form {
+                order: 3;
+                flex-basis: 100%;
+                max-width: none;
+                margin: 3px 0 10px;
+            }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+            .footer-brand { grid-column: 1 / -1; }
+        }
+
+        @media (max-width: 575px) {
+            .top-bar-content { justify-content: center; text-align: center; }
+            .top-currency { display: none; }
+            .logo-img { width: 46px; height: 46px; }
+            .brand-text { font-size: 16px; }
+            .brand-text small { font-size: 8px; }
+            .nav-actions { gap: 7px; }
+            .admin-management-link {
+                width: 42px;
+                min-width: 42px;
+                min-height: 42px;
+                padding: 0;
+            }
+            .admin-management-link span, .admin-user-box { display: none; }
+            .user-box { min-width: 54px; }
+            .user-icon { width: 39px; height: 39px; }
+            .cart-icon { width: 42px; min-width: 42px; height: 42px; }
+            .footer-grid { grid-template-columns: 1fr; }
+            .footer-brand { grid-column: auto; }
+            .footer { padding: 55px 16px 25px; }
+
+            .diam-launch {
+                right: 7px;
+                bottom: 8px;
+                width: 82px;
+                height: 112px;
+            }
+            .diam-launch-label { right: 66px; bottom: 18px; }
+            .diam-panel {
+                right: 10px;
+                bottom: 125px;
+                height: min(540px, calc(100dvh - 145px));
+            }
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}
+                <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'warning' %}alert-warning{% else %}alert-success{% endif %} alert-dismissible fade show site-message" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- BARRE SUPÉRIEURE -->
+    <div class="top-bar">
+        <div class="container top-bar-content">
+            <div>
+                <i class="fa-solid fa-mug-hot me-2"></i>
+                Grace GM · Une boutique dédiée à votre thé
+            </div>
+            <div class="top-currency">
+                Prix affichés en dollars canadiens ($ CA)
+            </div>
+        </div>
+    </div>
+
+    <!-- NAVIGATION ORIGINALE -->
+    <nav id="navbar" class="navbar custom-navbar sticky-top">
+        <div class="container">
+
+            <a class="navbar-brand" href="{% url 'home' %}" aria-label="Accueil Grace GM">
+                <img src="{% static 'images/logoBelly.png' %}" class="logo-img" alt="Logo Grace GM">
+                <span class="brand-text">
+                    Grace GM
+                    <small>Flat Tummy Tea</small>
+                </span>
+            </a>
+
+            <form method="GET" action="{% url 'search' %}" class="search-form">
+                <input type="search"
+                       name="q"
+                       class="form-control search-input"
+                       placeholder="Rechercher dans la boutique"
+                       value="{{ request.GET.q|default:'' }}"
+                       aria-label="Rechercher">
+                <button type="submit" class="btn-search" aria-label="Lancer la recherche">
+                    <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                </button>
+            </form>
+
+            <div class="nav-actions">
+                {% if user.is_authenticated and user.is_staff %}
+                    <div class="admin-box">
+                        <a href="{% url 'admin_dashboard' %}"
+                           class="admin-management-link"
+                           title="Gestion administrative"
+                           aria-label="Ouvrir la gestion administrative">
+                            <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
+                            <span>Gestion</span>
+                        </a>
+                        <div class="admin-user-box">
+                            <span class="admin-user-name">{{ user.first_name|default:user.username }}</span>
+                            <a href="{% url 'logout' %}" class="logout-link">Déconnexion</a>
+                        </div>
+                    </div>
+
+                {% elif user.is_authenticated %}
+                    <div class="user-box">
+                        <a href="#" class="user-icon" aria-label="Mon compte">
+                            <i class="fa-solid fa-user" aria-hidden="true"></i>
+                        </a>
+                        <div class="user-name">
+                            Bonjour {{ user.first_name|default:user.username }}
+                        </div>
+                        <a href="{% url 'logout' %}" class="logout-link">Déconnexion</a>
+                    </div>
+
+                {% else %}
+                    <div class="user-box">
+                        <button type="button"
+                                class="user-icon border-0"
+                                data-bs-toggle="modal"
+                                data-bs-target="#loginModal"
+                                aria-label="Connexion">
+                            <i class="fa-solid fa-user" aria-hidden="true"></i>
+                        </button>
+                        <button type="button"
+                                class="login-link border-0 bg-transparent p-0"
+                                data-bs-toggle="modal"
+                                data-bs-target="#loginModal">
+                            Connexion
+                        </button>
+                    </div>
+                {% endif %}
+
+                <a href="{% url 'cart' %}" class="cart-icon" aria-label="Voir le panier">
+                    <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+                    <span id="cart-counter"
+                          class="cart-badge{% if not cart_count %} is-empty{% endif %}"
+                          aria-live="polite"
+                          aria-label="{{ cart_count|default:0 }} article dans le panier">
+                        {{ cart_count|default:0 }}
+                    </span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTENU DES PAGES -->
+    <main class="container mt-4 main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- CONNEXION -->
+    <div class="modal fade"
+         id="loginModal"
+         tabindex="-1"
+         aria-labelledby="loginModalTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content login-modern">
+                <div class="modal-body position-relative">
+                    <button type="button"
+                            class="btn-close position-absolute top-0 end-0 m-3"
+                            data-bs-dismiss="modal"
+                            aria-label="Fermer"></button>
+
+                    <h4 id="loginModalTitle" class="text-center mt-3">Bienvenue 👋</h4>
+                    <p class="text-center text-muted">Connectez-vous à votre compte</p>
+
+                    {% if login_error %}
+                        <div class="alert alert-danger text-center py-2 small">
+                            {{ login_error }}
+                        </div>
+                    {% endif %}
+
+                    <form method="POST" action="{% url 'login' %}">
+                        {% csrf_token %}
+                        <input class="form-control mb-3"
+                               type="text"
+                               name="username"
+                               placeholder="Nom d’utilisateur"
+                               autocomplete="username"
+                               required>
+
+                        <div class="login-password mb-3">
+                            <input class="form-control"
+                                   id="login-password"
+                                   type="password"
+                                   name="password"
+                                   placeholder="Mot de passe"
+                                   autocomplete="current-password"
+                                   required>
+                            <button type="button"
+                                    class="password-toggle"
+                                    id="login-password-toggle"
+                                    aria-label="Afficher le mot de passe">
+                                <i class="fa-regular fa-eye" aria-hidden="true"></i>
+                            </button>
+                        </div>
+
+                        <button type="submit" class="btn-login">Se connecter</button>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <a href="{% url 'register' %}" class="d-block mb-2">Créer un compte</a>
+                        <a href="{% url 'password_reset' %}" class="text-muted small">Mot de passe oublié ?</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER ORIGINAL -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <img src="{% static 'images/logoBelly.png' %}"
+                             alt="Logo Grace GM"
+                             loading="lazy">
+                        <h2>Grace GM <small>Flat Tummy Tea</small></h2>
+                    </div>
+
+                    <p>
+                        Découvrez Flat Tummy Tea, sa fiche détaillée
+                        et les expériences partagées par nos clientes.
+                    </p>
+
+                    <div class="payment-icons" aria-label="Modes de paiement">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Visa_Inc._logo_%282021%E2%80%93present%29.svg"
+                             alt="Visa"
+                             loading="lazy">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg"
+                             alt="Mastercard"
+                             loading="lazy">
+                    </div>
+                </div>
+
+                <div class="footer-links">
+                    <h5>Explorer</h5>
+                    <a href="{% url 'home' %}#produit">Le produit</a>
+                    <a href="{% url 'home' %}#publicite">Présentation</a>
+                    <a href="{% url 'home' %}#temoignages">Témoignages</a>
+                    <a href="{% url 'cart' %}">Mon panier</a>
+                    {% if user.is_authenticated and user.is_staff %}
+                        <a href="{% url 'admin_dashboard' %}">Gestion administrative</a>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <h5>Contact</h5>
+                    <p>
+                        Contactez-nous pour toute question concernant
+                        le produit ou votre commande.
+                    </p>
+                </div>
+            </div>
+
+            <div class="hexa-section">
+                <img src="{% static 'images/logohexa.png' %}"
+                     class="hexa-logo"
+                     alt="HexaQuébec"
+                     loading="lazy">
+                <p>Site développé par <strong>HexaQuébec</strong> 🇨🇦</p>
+                <p class="text-secondary">
+                    Développement Web, mobile et intégration de l’intelligence artificielle
+                </p>
+                <a href="https://hexaquebec.com"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="hexa-link">
+                    Visiter HexaQuébec
+                    <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                </a>
+            </div>
+
+            <div class="footer-bottom">
+                © 2026 Grace GM — Tous droits réservés
+            </div>
+        </div>
+    </footer>
+
+    <!-- PHOTO FIXE DE GRACE -->
+    <button type="button"
+            class="diam-launch"
+            id="diam-launch"
+            aria-label="Ouvrir l’assistante Grace GM"
+            aria-controls="diam-panel"
+            aria-expanded="false">
+        <span class="diam-launch-label">Une question ?</span>
+        <img src="{% static 'images/Grace.png' %}" alt="" loading="lazy">
+    </button>
+
+    <!-- FENÊTRE DIAM IA -->
+    <section class="diam-panel"
+             id="diam-panel"
+             role="dialog"
+             aria-label="Assistante Grace GM"
+             data-endpoint="/diam-ia/chat/"
+             hidden>
+
+        <div class="diam-head">
+            <img class="diam-avatar"
+                 src="{% static 'images/Grace.png' %}"
+                 alt="">
+            <div class="diam-head-copy">
+                <strong>Grace · Diam IA</strong>
+                <small>Assistante de Grace GM par HexaQuébec</small>
+            </div>
+            <button type="button"
+                    class="diam-close"
+                    id="diam-close"
+                    aria-label="Fermer l’assistante">×</button>
+        </div>
+
+        <div class="diam-log" id="diam-log" role="log" aria-live="polite">
+            <div class="diam-bubble bot">
+                Bonjour ! Je suis Grace, l’assistante de la boutique Grace GM,
+                propulsée par Diam IA de HexaQuébec.
+                Comment puis-je vous aider ?
+            </div>
+        </div>
+
+        <div class="diam-quick">
+            <button type="button" data-diam-question="Comment commander ?">Commander</button>
+            <button type="button" data-diam-question="Comment suivre ma livraison ?">Livraison</button>
+            <button type="button" data-diam-question="Quels sont les moyens de paiement ?">Paiement</button>
+        </div>
+
+        <form class="diam-form" id="diam-form">
+            <input id="diam-input"
+                   type="text"
+                   maxlength="500"
+                   autocomplete="off"
+                   placeholder="Écrivez votre question…"
+                   aria-label="Votre question"
+                   required>
+            <button type="submit">Envoyer</button>
+        </form>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const navbar = document.getElementById("navbar");
+            const passwordInput = document.getElementById("login-password");
+            const passwordButton = document.getElementById("login-password-toggle");
+
+            function updateNavbar() {
+                if (navbar) {
+                    navbar.classList.toggle("scrolled", window.scrollY > 50);
+                }
+            }
+
+            updateNavbar();
+            window.addEventListener("scroll", updateNavbar, { passive: true });
+
+            if (passwordInput && passwordButton) {
+                passwordButton.addEventListener("click", function () {
+                    const visible = passwordInput.type === "password";
+                    passwordInput.type = visible ? "text" : "password";
+                    passwordButton.setAttribute(
+                        "aria-label",
+                        visible ? "Masquer le mot de passe" : "Afficher le mot de passe"
+                    );
+
+                    const icon = passwordButton.querySelector("i");
+                    if (icon) {
+                        icon.className = visible
+                            ? "fa-regular fa-eye-slash"
+                            : "fa-regular fa-eye";
+                    }
+                });
+            }
+
+            document.querySelectorAll(".site-message").forEach(function (element) {
+                window.setTimeout(function () {
+                    bootstrap.Alert.getOrCreateInstance(element).close();
+                }, 5000);
+            });
+        });
+
+        function updateCartCounter(total) {
+            const badge = document.getElementById("cart-counter");
+            if (!badge) return;
+
+            const count = Math.max(0, Number.parseInt(total, 10) || 0);
+            badge.textContent = count;
+            badge.setAttribute(
+                "aria-label",
+                count + (count > 1 ? " articles dans le panier" : " article dans le panier")
+            );
+            badge.classList.toggle("is-empty", count === 0);
+            badge.classList.remove("cart-bump");
+            void badge.offsetWidth;
+            badge.classList.add("cart-bump");
+        }
+
+        window.addEventListener("cart:updated", function (event) {
+            if (event.detail && event.detail.cart_count !== undefined) {
+                updateCartCounter(event.detail.cart_count);
+            }
+        });
+    </script>
+
+    {% if login_error or open_login_modal %}
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const modalElement = document.getElementById("loginModal");
+                if (modalElement) {
+                    new bootstrap.Modal(modalElement).show();
+                }
+            });
+        </script>
+    {% endif %}
+
+    <script>
+        (() => {
+            const openButton = document.getElementById("diam-launch");
+            const panel = document.getElementById("diam-panel");
+            const closeButton = document.getElementById("diam-close");
+            const form = document.getElementById("diam-form");
+            const input = document.getElementById("diam-input");
+            const log = document.getElementById("diam-log");
+
+            function getCookie(name) {
+                const item = document.cookie
+                    .split("; ")
+                    .find(part => part.startsWith(name + "="));
+
+                return item
+                    ? decodeURIComponent(item.split("=").slice(1).join("="))
+                    : "";
+            }
+
+            function toggle(open) {
+                panel.hidden = !open;
+                openButton.setAttribute("aria-expanded", String(open));
+
+                if (open) input.focus();
+                else openButton.focus();
+            }
+
+            function addBubble(text, author) {
+                const bubble = document.createElement("div");
+                bubble.className = "diam-bubble " + author;
+                bubble.textContent = text;
+                log.appendChild(bubble);
+                log.scrollTop = log.scrollHeight;
+                return bubble;
+            }
+
+            async function sendQuestion(question) {
+                addBubble(question, "user");
+                input.value = "";
+                const waiting = addBubble(
+                    "Un instant, je cherche la réponse…",
+                    "bot"
+                );
+
+                try {
+                    const response = await fetch(panel.dataset.endpoint, {
+                        method: "POST",
+                        credentials: "same-origin",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": getCookie("csrftoken")
+                        },
+                        body: JSON.stringify({ question })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Assistante indisponible");
+                    }
+
+                    const data = await response.json();
+                    waiting.textContent = data.answer ||
+                        "Je n’ai pas trouvé de réponse. Veuillez contacter Grace GM.";
+                } catch (error) {
+                    waiting.textContent =
+                        "L’assistante est momentanément indisponible. " +
+                        "Veuillez réessayer ou contacter Grace GM.";
+                }
+            }
+
+            openButton.addEventListener("click", () => toggle(panel.hidden));
+            closeButton.addEventListener("click", () => toggle(false));
+
+            document.addEventListener("keydown", event => {
+                if (event.key === "Escape" && !panel.hidden) toggle(false);
+            });
+
+            form.addEventListener("submit", event => {
+                event.preventDefault();
+                const question = input.value.trim();
+                if (question) sendQuestion(question);
+            });
+
+            document.querySelectorAll("[data-diam-question]").forEach(button => {
+                button.addEventListener("click", () => {
+                    sendQuestion(button.dataset.diamQuestion);
+                });
+            });
+        })();
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

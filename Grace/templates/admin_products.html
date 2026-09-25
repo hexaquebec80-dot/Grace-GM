@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Produits | Administration Grace GM{% endblock %}
+
+{% block content %}
+<style>
+.gp-page{min-height:100vh;padding:38px 18px 76px;background:linear-gradient(135deg,#fffafa,#fff2f8);color:#30252d;font-family:Arial,sans-serif}
+.gp-wrap{max-width:1320px;margin:auto}
+.gp-nav{display:flex;gap:8px;overflow:auto;padding:12px;margin-bottom:26px;background:#fff;border:1px solid #efdae4;border-radius:18px;box-shadow:0 12px 30px #51203a12}
+.gp-nav a{white-space:nowrap;padding:12px 16px;border-radius:11px;color:#61515b;text-decoration:none;font-size:14px;font-weight:700}
+.gp-nav a:hover,.gp-nav a.active{background:#51203a;color:#fff}
+.gp-hero{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:35px;margin-bottom:24px;border-radius:25px;background:linear-gradient(120deg,#171117,#61223e);color:#fff}
+.gp-kicker{font-size:12px;font-weight:800;letter-spacing:2px;color:#f4b2d0;text-transform:uppercase}
+.gp-hero h1{font-size:clamp(27px,4vw,43px);margin:9px 0;font-weight:900}
+.gp-hero p{margin:0;color:#f4dfeb;line-height:1.5}
+.gp-hero .gp-add{display:inline-block;white-space:nowrap;border-radius:12px;padding:14px 20px;color:#fff;background:#c43878;font-weight:800;text-decoration:none}
+.gp-hero .gp-add:hover{background:#a72761}
+.gp-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin:0 0 25px}
+.gp-stat{padding:20px;background:#fff;border:1px solid #efdae4;border-radius:18px;box-shadow:0 8px 22px #51203a0b}
+.gp-stat span{display:block;color:#7c6b75;font-size:13px;font-weight:700}.gp-stat strong{display:block;margin-top:10px;color:#24141e;font-size:30px}.gp-stat.warn strong{color:#bd6b0c}.gp-stat.danger strong{color:#c02640}
+.gp-card{background:#fff;border:1px solid #efdae4;border-radius:22px;overflow:hidden;box-shadow:0 14px 32px #51203a12}
+.gp-card-head{padding:22px 24px;border-bottom:1px solid #f1e5ea;display:flex;justify-content:space-between;gap:14px;align-items:center}
+.gp-card-head h2{margin:0;font-size:21px}.gp-count{font-size:13px;color:#826d79}
+.gp-tools{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:18px 24px;border-bottom:1px solid #f1e5ea}
+.gp-search{flex:1;min-width:220px;padding:13px 15px;border:1px solid #e9d7e0;border-radius:11px;font:inherit;outline:0}.gp-search:focus{border-color:#c43878}
+.gp-select{padding:13px 15px;border:1px solid #e9d7e0;border-radius:11px;background:#fff;font:inherit}
+.gp-table-wrap{overflow-x:auto}.gp-table{width:100%;border-collapse:collapse;min-width:790px}.gp-table th{text-align:left;color:#76646e;background:#fff9fc;font-size:12px;text-transform:uppercase;letter-spacing:.06em;padding:16px 20px}.gp-table td{padding:17px 20px;border-top:1px solid #f2e7ec;vertical-align:middle}.gp-table tr:hover td{background:#fffafd}
+.gp-product{display:flex;align-items:center;gap:13px;min-width:230px}.gp-image{width:56px;height:56px;border-radius:12px;background:#f9e9f0;object-fit:cover;flex:none}.gp-placeholder{display:grid;place-items:center;color:#a24b74;font-size:22px}.gp-product strong{display:block;color:#281b23}.gp-product small{color:#887783}
+.gp-price{font-weight:800;color:#251821}.gp-old{display:block;color:#958790;font-size:12px;text-decoration:line-through;margin-top:3px}.gp-badge{display:inline-block;padding:7px 11px;border-radius:20px;font-size:12px;font-weight:800}.gp-good{background:#eaf8ee;color:#177844}.gp-low{background:#fff2df;color:#a45b00}.gp-out{background:#ffe9ec;color:#b7223a}
+.gp-actions{display:flex;gap:7px}.gp-action{display:inline-block;padding:9px 12px;border-radius:9px;text-decoration:none;font-size:12px;font-weight:800;white-space:nowrap;background:#f8eaf1;color:#9b2458}.gp-action:hover{background:#eecfdf}.gp-delete{border:0;background:#fff0f0;color:#b42335;cursor:pointer;font:inherit;font-size:12px;font-weight:800;padding:9px 12px;border-radius:9px}
+.gp-empty{padding:65px 20px;text-align:center;color:#877480}.gp-empty strong{display:block;color:#31202b;font-size:20px;margin-bottom:8px}.gp-hidden{display:none!important}
+@media(max-width:850px){.gp-stats{grid-template-columns:repeat(2,1fr)}.gp-hero{align-items:flex-start;flex-direction:column}}
+@media(max-width:520px){.gp-stats{gap:10px}.gp-stat{padding:15px}.gp-stat strong{font-size:24px}.gp-card-head{align-items:flex-start;flex-direction:column}}
+</style>
+
+<main class="gp-page">
+ <div class="gp-wrap">
+  <nav class="gp-nav" aria-label="Administration">
+   <a href="{% url 'admin_dashboard' %}">Tableau de bord</a>
+   <a href="{% url 'admin_products' %}" class="active" aria-current="page">Produits</a>
+   <a href="{% url 'admin_orders' %}">Commandes</a>
+   <a href="{% url 'admin_payments' %}">Paiements</a>
+   <a href="{% url 'home' %}">Voir la boutique</a>
+  </nav>
+
+  <header class="gp-hero">
+   <div><span class="gp-kicker">Administration Grace GM</span><h1>Gestion des produits</h1><p>Consultez votre catalogue, vos prix et vos niveaux de stock.</p></div>
+   <a class="gp-add" href="{% url 'add_product' %}">+ Ajouter un produit</a>
+  </header>
+
+  <section class="gp-stats" aria-label="Statistiques des produits">
+   <div class="gp-stat"><span>Produits affichés</span><strong>{{ products|length }}</strong></div>
+   <div class="gp-stat"><span>Unités en stock</span><strong>{{ stock_total|default:0 }}</strong></div>
+   <div class="gp-stat warn"><span>Stocks faibles (5 ou moins)</span><strong>{{ low_stock_count|default:0 }}</strong></div>
+   <div class="gp-stat danger"><span>Ruptures de stock</span><strong>{{ out_of_stock_count|default:0 }}</strong></div>
+  </section>
+
+  <section class="gp-card">
+   <div class="gp-card-head"><h2>Catalogue</h2><span class="gp-count" id="gp-result-count"></span></div>
+   <div class="gp-tools">
+    <input id="gp-search" class="gp-search" type="search" placeholder="Rechercher un produit ou un numéro…" aria-label="Rechercher un produit">
+    <select id="gp-filter" class="gp-select" aria-label="Filtrer par stock"><option value="all">Tous les stocks</option><option value="available">Disponibles</option><option value="low">Stock faible</option><option value="out">En rupture</option></select>
+   </div>
+   <div class="gp-table-wrap">
+    <table class="gp-table"><thead><tr><th>Produit</th><th>Prix</th><th>Stock</th><th>État</th><th>Actions</th></tr></thead><tbody>
+    {% for product in products %}
+     <tr class="gp-row" data-search="{{ product.nom|lower }} {{ product.id }}" data-stock="{{ product.stock|default:0 }}">
+      <td><div class="gp-product">
+       {% if product.image %}<img class="gp-image" src="{{ product.image.url }}" alt="{{ product.nom }}" loading="lazy">{% else %}<div class="gp-image gp-placeholder" aria-hidden="true">✦</div>{% endif %}
+       <div><strong>{{ product.nom }}</strong><small>Produit #{{ product.id }}</small></div>
+      </div></td>
+      <td class="gp-price">{% if product.prix_promo and product.prix_promo > 0 %}{{ product.prix_promo|floatformat:2 }} $ CA<span class="gp-old">{{ product.prix|floatformat:2 }} $ CA</span>{% else %}{{ product.prix|floatformat:2 }} $ CA{% endif %}</td>
+      <td>{{ product.stock|default:0 }}</td>
+      <td>{% if product.stock <= 0 %}<span class="gp-badge gp-out">En rupture</span>{% elif product.stock <= 5 %}<span class="gp-badge gp-low">Stock faible</span>{% else %}<span class="gp-badge gp-good">Disponible</span>{% endif %}</td>
+      <td><div class="gp-actions"><a class="gp-action" href="{% url 'edit_product' product.id %}">Modifier</a><form method="post" action="{% url 'delete_product' product.id %}" onsubmit="return confirm('Supprimer définitivement ce produit ?');">{% csrf_token %}<button class="gp-delete" type="submit">Supprimer</button></form></div></td>
+     </tr>
+    {% empty %}
+     <tr><td colspan="5"><div class="gp-empty"><strong>Aucun produit</strong>Ajoutez votre premier produit pour le voir ici.</div></td></tr>
+    {% endfor %}
+    </tbody></table>
+   </div>
+   <div id="gp-no-result" class="gp-empty gp-hidden"><strong>Aucun résultat</strong>Essayez une autre recherche ou un autre filtre.</div>
+  </section>
+ </div>
+</main>
+
+<script>
+(() => {
+ const search = document.getElementById('gp-search');
+ const filter = document.getElementById('gp-filter');
+ const rows = [...document.querySelectorAll('.gp-row')];
+ const counter = document.getElementById('gp-result-count');
+ const empty = document.getElementById('gp-no-result');
+ const update = () => {
+  const query = search.value.trim().toLocaleLowerCase();
+  let visible = 0;
+  for (const row of rows) {
+   const stock = Number(row.dataset.stock);
+   const choice = filter.value;
+   const stockMatches = choice === 'all' || (choice === 'available' && stock > 5) || (choice === 'low' && stock > 0 && stock <= 5) || (choice === 'out' && stock <= 0);
+   const match = row.dataset.search.includes(query) && stockMatches;
+   row.classList.toggle('gp-hidden', !match);
+   if (match) visible++;
+  }
+  counter.textContent = `${visible} produit${visible > 1 ? 's' : ''}`;
+  empty.classList.toggle('gp-hidden', visible !== 0 || rows.length === 0);
+ };
+ search.addEventListener('input', update);
+ filter.addEventListener('change', update);
+ update();
+})();
+</script>
+{% endblock %}

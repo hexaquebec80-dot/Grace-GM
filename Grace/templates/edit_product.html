@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Modifier {{ product.nom }} | Grace GM{% endblock %}
+
+{% block content %}
+<style>
+.ep-page{min-height:100vh;padding:40px 18px 78px;background:linear-gradient(135deg,#fffafa,#fff2f8);font-family:Arial,sans-serif;color:#30252d}
+.ep-wrap{max-width:960px;margin:auto}.ep-nav{display:flex;gap:8px;overflow:auto;padding:12px;margin-bottom:25px;background:#fff;border:1px solid #eedce5;border-radius:17px}.ep-nav a{white-space:nowrap;padding:11px 14px;color:#655560;font-weight:700;text-decoration:none;border-radius:10px}.ep-nav a:hover,.ep-nav .active{background:#51203a;color:#fff}
+.ep-head{padding:30px 34px;background:linear-gradient(125deg,#171117,#61223e);border-radius:22px 22px 0 0;color:#fff}.ep-head small{color:#f8afd0;font-weight:800;letter-spacing:2px}.ep-head h1{font-size:clamp(26px,4vw,38px);margin:10px 0 5px}.ep-head p{color:#f2dce7;margin:0;line-height:1.5}
+.ep-card{background:#fff;border:1px solid #eedce5;border-radius:22px;overflow:hidden;box-shadow:0 18px 38px #51203a18}.ep-body{padding:32px 34px}.ep-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.ep-field{min-width:0}.ep-full{grid-column:1/-1}.ep-field label{display:block;margin-bottom:8px;color:#382931;font-size:14px;font-weight:800}.ep-field input,.ep-field textarea{box-sizing:border-box;width:100%;padding:13px 15px;border:1px solid #e7d3dd;border-radius:11px;background:#fff;font:inherit;color:#30252d;outline:0}.ep-field input:focus,.ep-field textarea:focus{border-color:#c43878;box-shadow:0 0 0 3px #c4387822}.ep-field textarea{min-height:145px;resize:vertical;line-height:1.5}.ep-help{display:block;margin-top:7px;color:#81717a;font-size:12px}.ep-preview{display:flex;align-items:center;gap:15px;padding:14px;background:#fff9fc;border:1px solid #f0dfe7;border-radius:12px}.ep-preview img{width:84px;height:84px;object-fit:cover;border-radius:10px}.ep-preview p{margin:0;color:#6d5d66;font-size:13px;line-height:1.5}.ep-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end;margin-top:30px;padding-top:23px;border-top:1px solid #f0e4ea}.ep-button{border:0;padding:13px 19px;border-radius:11px;font:inherit;font-size:14px;font-weight:800;text-decoration:none;cursor:pointer}.ep-save{color:#fff;background:#b92f70}.ep-save:hover{background:#982454}.ep-cancel{color:#51203a;background:#f7eaf0}.ep-message{padding:14px 18px;margin:0 0 18px;border:1px solid #efcad9;border-radius:10px;background:#fff0f5;color:#84244c}
+@media(max-width:640px){.ep-grid{grid-template-columns:1fr}.ep-body{padding:24px 19px}.ep-head{padding:27px 20px}.ep-actions>*{flex:1;text-align:center}}
+</style>
+
+<main class="ep-page"><div class="ep-wrap">
+ <nav class="ep-nav" aria-label="Administration"><a href="{% url 'admin_dashboard' %}">Tableau de bord</a><a href="{% url 'admin_products' %}" class="active">Produits</a><a href="{% url 'admin_orders' %}">Commandes</a><a href="{% url 'home' %}">Boutique</a></nav>
+ <section class="ep-card">
+  <header class="ep-head"><small>ADMINISTRATION GRACE GM</small><h1>Modifier le produit</h1><p>Produit #{{ product.id }} · Actualisez les informations et enregistrez vos changements.</p></header>
+  <div class="ep-body">
+   {% if messages %}{% for message in messages %}<div class="ep-message" role="alert">{{ message }}</div>{% endfor %}{% endif %}
+   <form method="post" enctype="multipart/form-data" action="{% url 'edit_product' product.id %}">
+    {% csrf_token %}
+    <div class="ep-grid">
+     <div class="ep-field ep-full"><label for="ep-name">Nom du produit *</label><input id="ep-name" name="name" type="text" value="{% if request.method == 'POST' %}{{ request.POST.name }}{% else %}{{ product.nom }}{% endif %}" required maxlength="255"></div>
+     <div class="ep-field"><label for="ep-price">Prix régulier ($ CA) *</label><input id="ep-price" name="price" type="number" step="0.01" min="0.01" value="{% if request.method == 'POST' %}{{ request.POST.price }}{% else %}{{ product.prix }}{% endif %}" required></div>
+     <div class="ep-field"><label for="ep-promo">Prix promotionnel ($ CA)</label><input id="ep-promo" name="promo_price" type="number" step="0.01" min="0" value="{% if request.method == 'POST' %}{{ request.POST.promo_price }}{% else %}{{ product.prix_promo|default_if_none:'' }}{% endif %}"><small class="ep-help">Laissez vide s’il n’y a pas de promotion.</small></div>
+     <div class="ep-field"><label for="ep-stock">Unités en stock *</label><input id="ep-stock" name="stock" type="number" step="1" min="0" value="{% if request.method == 'POST' %}{{ request.POST.stock }}{% else %}{{ product.stock }}{% endif %}" required></div>
+     <div class="ep-field"><label for="ep-image">Nouvelle image</label><input id="ep-image" name="image" type="file" accept="image/*"><small class="ep-help">L’image actuelle est conservée si vous ne choisissez aucun fichier.</small></div>
+     {% if product.image %}<div class="ep-field ep-full"><div class="ep-preview"><img src="{{ product.image.url }}" alt="Image actuelle de {{ product.nom }}"><p><strong>Image actuelle</strong><br>Choisissez une nouvelle image seulement si vous voulez la remplacer.</p></div></div>{% endif %}
+     <div class="ep-field ep-full"><label for="ep-description">Description *</label><textarea id="ep-description" name="description" required>{% if request.method == 'POST' %}{{ request.POST.description }}{% else %}{{ product.description }}{% endif %}</textarea></div>
+    </div>
+    <div class="ep-actions"><a href="{% url 'admin_products' %}" class="ep-button ep-cancel">Annuler</a><button type="submit" class="ep-button ep-save">Enregistrer les modifications</button></div>
+   </form>
+  </div>
+ </section>
+</div></main>
+{% endblock %}

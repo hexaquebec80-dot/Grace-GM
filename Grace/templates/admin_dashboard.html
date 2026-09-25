@@ -1,0 +1,1601 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    Gestion administrative | Grace GM
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .grace-admin {
+        --green: #164110;
+        --green-light: #51731a;
+        --green-soft: #eef6e9;
+        --gold: #cba451;
+        --dark: #10230d;
+        --text: #263326;
+        --muted: #69756a;
+        --border: #e1e9da;
+        --red: #b42332;
+        --orange: #b66a00;
+        --blue: #2563eb;
+        --purple: #7c3aed;
+
+        padding: 24px 0 70px;
+    }
+
+    .grace-admin * {
+        box-sizing: border-box;
+    }
+
+    /* =====================================================
+       EN-TÊTE
+    ===================================================== */
+
+    .admin-hero {
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 27px;
+        padding: clamp(30px, 5vw, 55px);
+        border-radius: 31px;
+        color: #fff;
+        background:
+            radial-gradient(
+                circle at 88% 18%,
+                rgba(203, 164, 81, 0.38),
+                transparent 27%
+            ),
+            linear-gradient(
+                135deg,
+                #0c210b,
+                var(--green),
+                var(--green-light)
+            );
+        box-shadow: 0 25px 65px rgba(22, 65, 16, 0.25);
+        animation: admin-rise 0.65s ease both;
+    }
+
+    .admin-hero::before {
+        content: "";
+        position: absolute;
+        top: -145px;
+        right: -75px;
+        width: 330px;
+        height: 330px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 50%;
+    }
+
+    .admin-hero::after {
+        content: "";
+        position: absolute;
+        right: 125px;
+        bottom: -165px;
+        width: 280px;
+        height: 280px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    .admin-hero-content {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+    }
+
+    .admin-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        margin-bottom: 11px;
+        color: #f3dfad;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+    }
+
+    .admin-hero h1 {
+        margin: 0 0 12px;
+        font-size: clamp(2rem, 4vw, 3.5rem);
+        font-weight: 950;
+        letter-spacing: -0.045em;
+    }
+
+    .admin-hero p {
+        max-width: 670px;
+        margin: 0;
+        color: #e3eedf;
+        font-size: 1rem;
+        line-height: 1.7;
+    }
+
+    .admin-profile {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        min-width: 220px;
+        padding: 16px 19px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.10);
+        backdrop-filter: blur(10px);
+    }
+
+    .admin-profile-icon {
+        display: grid;
+        place-items: center;
+        width: 49px;
+        min-width: 49px;
+        height: 49px;
+        border-radius: 16px;
+        color: var(--green);
+        background: #fff;
+        font-size: 19px;
+    }
+
+    .admin-profile small {
+        display: block;
+        color: #dce9d7;
+    }
+
+    .admin-profile strong {
+        display: block;
+        color: #fff;
+        font-size: 14px;
+    }
+
+    /* =====================================================
+       STRUCTURE
+    ===================================================== */
+
+    .admin-layout {
+        display: grid;
+        grid-template-columns: 250px minmax(0, 1fr);
+        gap: 25px;
+        align-items: start;
+    }
+
+    .admin-content {
+        min-width: 0;
+    }
+
+    /* =====================================================
+       MENU LATÉRAL
+    ===================================================== */
+
+    .admin-sidebar {
+        position: sticky;
+        top: 115px;
+        overflow: hidden;
+        padding: 18px;
+        border: 1px solid var(--border);
+        border-radius: 25px;
+        background: rgba(255, 255, 255, 0.97);
+        box-shadow: 0 17px 45px rgba(22, 65, 16, 0.10);
+        animation: admin-rise 0.7s ease both;
+    }
+
+    .sidebar-title {
+        padding: 12px 12px 17px;
+        color: var(--green);
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.10em;
+        text-transform: uppercase;
+    }
+
+    .admin-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .admin-menu-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 13px;
+        border-radius: 15px;
+        color: #445044;
+        font-size: 13px;
+        font-weight: 800;
+        transition: 0.25s;
+    }
+
+    .admin-menu-link i {
+        display: grid;
+        place-items: center;
+        width: 35px;
+        min-width: 35px;
+        height: 35px;
+        border-radius: 11px;
+        color: var(--green);
+        background: var(--green-soft);
+    }
+
+    .admin-menu-link:hover,
+    .admin-menu-link.active {
+        color: #fff;
+        background:
+            linear-gradient(
+                135deg,
+                var(--green),
+                var(--green-light)
+            );
+        transform: translateX(4px);
+    }
+
+    .admin-menu-link:hover i,
+    .admin-menu-link.active i {
+        color: var(--green);
+        background: #fff;
+    }
+
+    .admin-menu-link.logout {
+        color: var(--red);
+    }
+
+    .admin-menu-link.logout i {
+        color: var(--red);
+        background: #fff0f1;
+    }
+
+    .sidebar-divider {
+        height: 1px;
+        margin: 11px 6px;
+        background: var(--border);
+    }
+
+    /* =====================================================
+       STATISTIQUES
+    ===================================================== */
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 17px;
+    }
+
+    .stat-card {
+        position: relative;
+        overflow: hidden;
+        min-height: 157px;
+        padding: 21px;
+        border: 1px solid var(--border);
+        border-radius: 22px;
+        background: #fff;
+        box-shadow: 0 14px 38px rgba(22, 65, 16, 0.08);
+        transition: 0.27s;
+        animation: admin-rise 0.72s ease both;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-7px);
+        box-shadow: 0 22px 48px rgba(22, 65, 16, 0.15);
+    }
+
+    .stat-card::after {
+        content: "";
+        position: absolute;
+        right: -45px;
+        bottom: -65px;
+        width: 135px;
+        height: 135px;
+        border-radius: 50%;
+        background: rgba(81, 115, 26, 0.06);
+    }
+
+    .stat-icon {
+        display: grid;
+        place-items: center;
+        width: 46px;
+        height: 46px;
+        margin-bottom: 16px;
+        border-radius: 14px;
+        font-size: 19px;
+    }
+
+    .stat-card.green .stat-icon {
+        color: var(--green);
+        background: #eaf5e5;
+    }
+
+    .stat-card.blue .stat-icon {
+        color: var(--blue);
+        background: #eaf1ff;
+    }
+
+    .stat-card.gold .stat-icon {
+        color: #9b6800;
+        background: #fff5d8;
+    }
+
+    .stat-card.pink .stat-icon {
+        color: #a72d70;
+        background: #fff0f7;
+    }
+
+    .stat-card.purple .stat-icon {
+        color: var(--purple);
+        background: #f1eaff;
+    }
+
+    .stat-card.orange .stat-icon {
+        color: var(--orange);
+        background: #fff0dc;
+    }
+
+    .stat-card.red .stat-icon {
+        color: var(--red);
+        background: #ffe9eb;
+    }
+
+    .stat-label {
+        position: relative;
+        z-index: 2;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    .stat-number {
+        position: relative;
+        z-index: 2;
+        display: block;
+        margin-top: 5px;
+        color: var(--dark);
+        font-size: clamp(1.7rem, 3vw, 2.45rem);
+        font-weight: 950;
+        line-height: 1.1;
+    }
+
+    .stat-number.money {
+        color: var(--green);
+        font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    /* =====================================================
+       SECTIONS
+    ===================================================== */
+
+    .dashboard-section {
+        margin-top: 24px;
+        padding: 26px;
+        border: 1px solid var(--border);
+        border-radius: 25px;
+        background: #fff;
+        box-shadow: 0 16px 44px rgba(22, 65, 16, 0.08);
+        animation: admin-rise 0.8s ease both;
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        margin-bottom: 21px;
+    }
+
+    .section-header h2 {
+        margin: 0;
+        color: var(--dark);
+        font-size: 21px;
+        font-weight: 950;
+    }
+
+    .section-header p {
+        margin: 5px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+    }
+
+    .section-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 17px;
+        border-radius: 999px;
+        color: #fff;
+        background: var(--green);
+        font-size: 13px;
+        font-weight: 900;
+        white-space: nowrap;
+        transition: 0.25s;
+    }
+
+    .section-link:hover {
+        color: #fff;
+        background: var(--green-light);
+        transform: translateY(-2px);
+    }
+
+    /* =====================================================
+       LIVRAISONS
+    ===================================================== */
+
+    .delivery-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 15px;
+    }
+
+    .delivery-card {
+        position: relative;
+        padding: 20px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        border-radius: 19px;
+        background: #fbfdf9;
+    }
+
+    .delivery-card i {
+        margin-bottom: 14px;
+        color: var(--green);
+        font-size: 24px;
+    }
+
+    .delivery-card strong {
+        display: block;
+        color: var(--dark);
+        font-size: 27px;
+        font-weight: 950;
+    }
+
+    .delivery-card span {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    .delivery-card.warning {
+        border-color: #f0d9a5;
+        background: #fffaf0;
+    }
+
+    .delivery-card.warning i {
+        color: #a66c00;
+    }
+
+    .delivery-card.shipped {
+        border-color: #d8d0f1;
+        background: #f9f7ff;
+    }
+
+    .delivery-card.shipped i {
+        color: var(--purple);
+    }
+
+    .delivery-card.delivered {
+        border-color: #cde8d5;
+        background: #f2fbf5;
+    }
+
+    .delivery-card.delivered i {
+        color: #198447;
+    }
+
+    .delivery-card.reminder {
+        border-color: #f2ced3;
+        background: #fff7f8;
+    }
+
+    .delivery-card.reminder i {
+        color: var(--red);
+    }
+
+    /* =====================================================
+       ACTIONS RAPIDES
+    ===================================================== */
+
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 15px;
+    }
+
+    .quick-action {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-height: 91px;
+        padding: 17px;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        color: var(--dark);
+        background: #f7faf4;
+        transition: 0.25s;
+    }
+
+    .quick-action:hover {
+        color: #fff;
+        border-color: var(--green);
+        background: var(--green);
+        transform: translateY(-4px);
+        box-shadow: 0 14px 28px rgba(22, 65, 16, 0.18);
+    }
+
+    .quick-action-icon {
+        display: grid;
+        place-items: center;
+        width: 48px;
+        min-width: 48px;
+        height: 48px;
+        border-radius: 15px;
+        color: var(--green);
+        background: #fff;
+        font-size: 19px;
+    }
+
+    .quick-action strong {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 14px;
+        font-weight: 900;
+    }
+
+    .quick-action small {
+        display: block;
+        color: var(--muted);
+        line-height: 1.4;
+    }
+
+    .quick-action:hover small {
+        color: #dfead9;
+    }
+
+    /* =====================================================
+       STOCK FAIBLE
+    ===================================================== */
+
+    .stock-alert {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 15px;
+        border: 1px solid #f1ddb0;
+        border-radius: 16px;
+        background: #fffaf0;
+    }
+
+    .stock-alert + .stock-alert {
+        margin-top: 10px;
+    }
+
+    .stock-product {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+    }
+
+    .stock-product img {
+        width: 55px;
+        height: 55px;
+        padding: 4px;
+        border-radius: 13px;
+        background: #fff;
+        object-fit: contain;
+    }
+
+    .stock-product strong {
+        display: block;
+        color: var(--dark);
+    }
+
+    .stock-product small {
+        color: var(--muted);
+    }
+
+    .stock-value {
+        min-width: 70px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        color: #9b6100;
+        background: #fff0c7;
+        text-align: center;
+        font-size: 12px;
+        font-weight: 900;
+    }
+
+    /* =====================================================
+       TABLEAU
+    ===================================================== */
+
+    .admin-table-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+    }
+
+    .admin-table {
+        width: 100%;
+        min-width: 850px;
+        margin: 0;
+        border-collapse: collapse;
+    }
+
+    .admin-table th {
+        padding: 14px 15px;
+        color: var(--green);
+        background: #f3f8ef;
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    .admin-table td {
+        padding: 15px;
+        border-top: 1px solid var(--border);
+        color: #3e493f;
+        font-size: 13px;
+        vertical-align: middle;
+    }
+
+    .order-number {
+        color: var(--green);
+        font-weight: 900;
+    }
+
+    .status {
+        display: inline-flex;
+        padding: 7px 11px;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 900;
+        white-space: nowrap;
+    }
+
+    .status-paid,
+    .status-delivered {
+        color: #176b36;
+        background: #e8f7ec;
+    }
+
+    .status-pending,
+    .status-preparing {
+        color: #956300;
+        background: #fff4d7;
+    }
+
+    .status-failed,
+    .status-cancelled {
+        color: #a11f2e;
+        background: #ffe8eb;
+    }
+
+    .status-shipped,
+    .status-transit {
+        color: #6543a5;
+        background: #eee9ff;
+    }
+
+    .table-action {
+        display: inline-grid;
+        place-items: center;
+        width: 35px;
+        height: 35px;
+        border-radius: 11px;
+        color: var(--green);
+        background: var(--green-soft);
+        transition: 0.25s;
+    }
+
+    .table-action:hover {
+        color: #fff;
+        background: var(--green);
+    }
+
+    .tracking-number {
+        color: var(--blue);
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    .empty-state {
+        padding: 45px 20px;
+        color: var(--muted);
+        text-align: center;
+    }
+
+    /* =====================================================
+       ANIMATIONS
+    ===================================================== */
+
+    @keyframes admin-rise {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* =====================================================
+       RESPONSIVE
+    ===================================================== */
+
+    @media (max-width: 1150px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .delivery-grid,
+        .quick-actions {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 850px) {
+        .admin-hero-content {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .admin-profile {
+            width: 100%;
+        }
+
+        .admin-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .admin-sidebar {
+            position: static;
+        }
+
+        .admin-menu {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 575px) {
+        .grace-admin {
+            padding-top: 7px;
+        }
+
+        .admin-hero {
+            border-radius: 22px;
+        }
+
+        .stats-grid,
+        .delivery-grid,
+        .quick-actions,
+        .admin-menu {
+            grid-template-columns: 1fr;
+        }
+
+        .section-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .section-link {
+            width: 100%;
+        }
+
+        .dashboard-section {
+            padding: 19px;
+        }
+
+        .stock-alert {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .admin-hero,
+        .admin-sidebar,
+        .stat-card,
+        .dashboard-section {
+            animation: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<section class="grace-admin">
+
+    <!-- EN-TÊTE -->
+
+    <header class="admin-hero">
+        <div class="admin-hero-content">
+
+            <div>
+                <div class="admin-eyebrow">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    Espace administratif sécurisé
+                </div>
+
+                <h1>Gestion Grace GM</h1>
+
+                <p>
+                    Gérez le produit, les commandes, les paiements,
+                    les clientes, le stock et les livraisons depuis
+                    un seul tableau de bord.
+                </p>
+            </div>
+
+            <div class="admin-profile">
+
+                <div class="admin-profile-icon">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+
+                <div>
+                    <small>Administratrice connectée</small>
+
+                    <strong>
+                        {% if request.user.get_full_name %}
+                            {{ request.user.get_full_name }}
+                        {% else %}
+                            {{ request.user.username }}
+                        {% endif %}
+                    </strong>
+                </div>
+
+            </div>
+
+        </div>
+    </header>
+
+    <div class="admin-layout">
+
+        <!-- MENU LATÉRAL -->
+
+        <aside class="admin-sidebar">
+
+            <div class="sidebar-title">
+                Menu de gestion
+            </div>
+
+            <nav class="admin-menu">
+
+                <a
+                    href="{% url 'admin_dashboard' %}"
+                    class="admin-menu-link active"
+                >
+                    <i class="fa-solid fa-chart-pie"></i>
+                    Tableau de bord
+                </a>
+
+                <a
+                    href="{% url 'admin_products' %}"
+                    class="admin-menu-link"
+                >
+                    <i class="fa-solid fa-box"></i>
+                    Produit
+                </a>
+
+                <a
+                    href="{% url 'admin_orders' %}"
+                    class="admin-menu-link"
+                >
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    Commandes
+                </a>
+
+                <a
+                    href="{% url 'admin_orders' %}?delivery_status=NOT_SHIPPED"
+                    class="admin-menu-link"
+                >
+                    <i class="fa-solid fa-truck"></i>
+                    Livraisons
+                </a>
+
+                <a
+                    href="{% url 'admin_payments' %}"
+                    class="admin-menu-link"
+                >
+                    <i class="fa-solid fa-credit-card"></i>
+                    Paiements
+                </a>
+
+                <a
+                    href="{% url 'add_product' %}"
+                    class="admin-menu-link"
+                >
+                    <i class="fa-solid fa-plus"></i>
+                    Ajouter un produit
+                </a>
+
+                <div class="sidebar-divider"></div>
+
+                <a
+                    href="{% url 'home' %}"
+                    class="admin-menu-link"
+                >
+                    <i class="fa-solid fa-store"></i>
+                    Voir la boutique
+                </a>
+
+                <a
+                    href="{% url 'logout' %}"
+                    class="admin-menu-link logout"
+                >
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    Déconnexion
+                </a>
+
+            </nav>
+        </aside>
+
+        <!-- CONTENU -->
+
+        <div class="admin-content">
+
+            <!-- STATISTIQUES PRINCIPALES -->
+
+            <div class="stats-grid">
+
+                <article class="stat-card green">
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-dollar-sign"></i>
+                    </div>
+
+                    <span class="stat-label">
+                        Revenu total
+                    </span>
+
+                    <strong class="stat-number money">
+                        {{ total_revenue|default:0|floatformat:2 }}
+                        $ CA
+                    </strong>
+                </article>
+
+                <article class="stat-card blue">
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-bag-shopping"></i>
+                    </div>
+
+                    <span class="stat-label">
+                        Commandes
+                    </span>
+
+                    <strong
+                        class="stat-number"
+                        data-counter="{{ orders|default:0 }}"
+                    >
+                        {{ orders|default:0 }}
+                    </strong>
+                </article>
+
+                <article class="stat-card gold">
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-credit-card"></i>
+                    </div>
+
+                    <span class="stat-label">
+                        Paiements confirmés
+                    </span>
+
+                    <strong
+                        class="stat-number"
+                        data-counter="{{ payments|default:0 }}"
+                    >
+                        {{ payments|default:0 }}
+                    </strong>
+                </article>
+
+                <article class="stat-card pink">
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+
+                    <span class="stat-label">
+                        Clientes inscrites
+                    </span>
+
+                    <strong
+                        class="stat-number"
+                        data-counter="{{ users|default:0 }}"
+                    >
+                        {{ users|default:0 }}
+                    </strong>
+                </article>
+
+                <article class="stat-card green">
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                    </div>
+
+                    <span class="stat-label">
+                        Stock total
+                    </span>
+
+                    <strong
+                        class="stat-number"
+                        data-counter="{{ stock_total|default:0 }}"
+                    >
+                        {{ stock_total|default:0 }}
+                    </strong>
+                </article>
+
+                <article class="stat-card purple">
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-truck-fast"></i>
+                    </div>
+
+                    <span class="stat-label">
+                        À expédier
+                    </span>
+
+                    <strong
+                        class="stat-number"
+                        data-counter="{{ orders_to_ship|default:0 }}"
+                    >
+                        {{ orders_to_ship|default:0 }}
+                    </strong>
+                </article>
+
+                <article class="stat-card orange">
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+
+                    <span class="stat-label">
+                        Paiements en attente
+                    </span>
+
+                    <strong
+                        class="stat-number"
+                        data-counter="{{ pending_payments|default:0 }}"
+                    >
+                        {{ pending_payments|default:0 }}
+                    </strong>
+                </article>
+
+                <article class="stat-card red">
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-bell"></i>
+                    </div>
+
+                    <span class="stat-label">
+                        Rappels
+                    </span>
+
+                    <strong
+                        class="stat-number"
+                        data-counter="{{ reminder_orders|default:0 }}"
+                    >
+                        {{ reminder_orders|default:0 }}
+                    </strong>
+                </article>
+
+            </div>
+
+            <!-- GESTION DES LIVRAISONS -->
+
+            <section class="dashboard-section">
+
+                <div class="section-header">
+
+                    <div>
+                        <h2>Gestion des livraisons</h2>
+
+                        <p>
+                            Suivez les commandes à préparer,
+                            expédiées et livrées.
+                        </p>
+                    </div>
+
+                    <a
+                        href="{% url 'admin_orders' %}"
+                        class="section-link"
+                    >
+                        Gérer les livraisons
+
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+
+                </div>
+
+                <div class="delivery-grid">
+
+                    <article class="delivery-card warning">
+                        <i class="fa-solid fa-box-open"></i>
+
+                        <strong>
+                            {{ orders_to_ship|default:0 }}
+                        </strong>
+
+                        <span>
+                            À préparer ou expédier
+                        </span>
+                    </article>
+
+                    <article class="delivery-card shipped">
+                        <i class="fa-solid fa-truck-fast"></i>
+
+                        <strong>
+                            {{ shipped_orders|default:0 }}
+                        </strong>
+
+                        <span>
+                            Expédiées ou en transit
+                        </span>
+                    </article>
+
+                    <article class="delivery-card delivered">
+                        <i class="fa-solid fa-circle-check"></i>
+
+                        <strong>
+                            {{ delivered_orders|default:0 }}
+                        </strong>
+
+                        <span>
+                            Commandes livrées
+                        </span>
+                    </article>
+
+                    <article class="delivery-card reminder">
+                        <i class="fa-solid fa-bell"></i>
+
+                        <strong>
+                            {{ reminder_orders|default:0 }}
+                        </strong>
+
+                        <span>
+                            Rappels administratifs
+                        </span>
+                    </article>
+
+                </div>
+
+            </section>
+
+            <!-- ACTIONS RAPIDES -->
+
+            <section class="dashboard-section">
+
+                <div class="section-header">
+                    <div>
+                        <h2>Actions rapides</h2>
+
+                        <p>
+                            Accédez aux principales fonctions administratives.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+
+                    <a
+                        href="{% url 'admin_products' %}"
+                        class="quick-action"
+                    >
+                        <div class="quick-action-icon">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </div>
+
+                        <div>
+                            <strong>Modifier le produit</strong>
+
+                            <small>
+                                Prix, description, images et stock
+                            </small>
+                        </div>
+                    </a>
+
+                    <a
+                        href="{% url 'admin_orders' %}"
+                        class="quick-action"
+                    >
+                        <div class="quick-action-icon">
+                            <i class="fa-solid fa-bag-shopping"></i>
+                        </div>
+
+                        <div>
+                            <strong>Gérer les commandes</strong>
+
+                            <small>
+                                Consultez les détails des commandes
+                            </small>
+                        </div>
+                    </a>
+
+                    <a
+                        href="{% url 'admin_orders' %}?delivery_status=NOT_SHIPPED"
+                        class="quick-action"
+                    >
+                        <div class="quick-action-icon">
+                            <i class="fa-solid fa-truck"></i>
+                        </div>
+
+                        <div>
+                            <strong>Ajouter une livraison</strong>
+
+                            <small>
+                                Transporteur et numéro de suivi
+                            </small>
+                        </div>
+                    </a>
+
+                    <a
+                        href="{% url 'admin_payments' %}"
+                        class="quick-action"
+                    >
+                        <div class="quick-action-icon">
+                            <i class="fa-solid fa-dollar-sign"></i>
+                        </div>
+
+                        <div>
+                            <strong>Voir les paiements</strong>
+
+                            <small>
+                                Paiements Stripe et revenus
+                            </small>
+                        </div>
+                    </a>
+
+                    <a
+                        href="{% url 'home' %}#temoignages"
+                        class="quick-action"
+                    >
+                        <div class="quick-action-icon">
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+
+                        <div>
+                            <strong>Voir les avis</strong>
+
+                            <small>
+                                Avis et preuves des clientes
+                            </small>
+                        </div>
+                    </a>
+
+                    <a
+                        href="{% url 'home' %}"
+                        class="quick-action"
+                    >
+                        <div class="quick-action-icon">
+                            <i class="fa-solid fa-eye"></i>
+                        </div>
+
+                        <div>
+                            <strong>Voir la boutique</strong>
+
+                            <small>
+                                Afficher la page publique
+                            </small>
+                        </div>
+                    </a>
+
+                </div>
+
+            </section>
+
+            <!-- ALERTE DE STOCK -->
+
+            {% if low_stock_products %}
+
+                <section class="dashboard-section">
+
+                    <div class="section-header">
+
+                        <div>
+                            <h2>Alertes de stock</h2>
+
+                            <p>
+                                Produits ayant cinq articles ou moins.
+                            </p>
+                        </div>
+
+                        <a
+                            href="{% url 'admin_products' %}"
+                            class="section-link"
+                        >
+                            Gérer le stock
+                        </a>
+
+                    </div>
+
+                    {% for product in low_stock_products %}
+
+                        <div class="stock-alert">
+
+                            <div class="stock-product">
+
+                                {% if product.image %}
+                                    <img
+                                        src="{{ product.image.url }}"
+                                        alt="{{ product.nom }}"
+                                    >
+                                {% endif %}
+
+                                <div>
+                                    <strong>
+                                        {{ product.nom }}
+                                    </strong>
+
+                                    <small>
+                                        Stock faible
+                                    </small>
+                                </div>
+
+                            </div>
+
+                            <span class="stock-value">
+                                {{ product.stock }} restant{{ product.stock|pluralize }}
+                            </span>
+
+                        </div>
+
+                    {% endfor %}
+
+                </section>
+
+            {% endif %}
+
+            <!-- COMMANDES RÉCENTES -->
+
+            <section class="dashboard-section">
+
+                <div class="section-header">
+
+                    <div>
+                        <h2>Commandes récentes</h2>
+
+                        <p>
+                            Les dernières commandes enregistrées.
+                        </p>
+                    </div>
+
+                    <a
+                        href="{% url 'admin_orders' %}"
+                        class="section-link"
+                    >
+                        Toutes les commandes
+
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+
+                </div>
+
+                {% if recent_orders %}
+
+                    <div class="admin-table-wrap">
+
+                        <table class="admin-table">
+
+                            <thead>
+                                <tr>
+                                    <th>Commande</th>
+                                    <th>Cliente</th>
+                                    <th>Total</th>
+                                    <th>Paiement</th>
+                                    <th>Livraison</th>
+                                    <th>Suivi</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                {% for order in recent_orders %}
+
+                                    <tr>
+
+                                        <td>
+                                            <span class="order-number">
+                                                #{{ order.id }}
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <strong>
+                                                {{ order.prenom }}
+                                                {{ order.nom }}
+                                            </strong>
+
+                                            <br>
+
+                                            <small class="text-muted">
+                                                {{ order.email }}
+                                            </small>
+                                        </td>
+
+                                        <td>
+                                            <strong>
+                                                {{ order.total|floatformat:2 }}
+                                                $ CA
+                                            </strong>
+                                        </td>
+
+                                        <td>
+                                            {% if order.payment_status == "PAID" %}
+
+                                                <span class="status status-paid">
+                                                    Payé
+                                                </span>
+
+                                            {% elif order.payment_status == "FAILED" %}
+
+                                                <span class="status status-failed">
+                                                    Échoué
+                                                </span>
+
+                                            {% else %}
+
+                                                <span class="status status-pending">
+                                                    En attente
+                                                </span>
+
+                                            {% endif %}
+                                        </td>
+
+                                        <td>
+                                            {% if order.delivery_status == "DELIVERED" %}
+
+                                                <span class="status status-delivered">
+                                                    Livrée
+                                                </span>
+
+                                            {% elif order.delivery_status == "SHIPPED" %}
+
+                                                <span class="status status-shipped">
+                                                    Expédiée
+                                                </span>
+
+                                            {% elif order.delivery_status == "IN_TRANSIT" %}
+
+                                                <span class="status status-transit">
+                                                    En transit
+                                                </span>
+
+                                            {% elif order.delivery_status == "PREPARING" %}
+
+                                                <span class="status status-preparing">
+                                                    En préparation
+                                                </span>
+
+                                            {% elif order.delivery_status == "CANCELLED" %}
+
+                                                <span class="status status-cancelled">
+                                                    Annulée
+                                                </span>
+
+                                            {% else %}
+
+                                                <span class="status status-pending">
+                                                    Non expédiée
+                                                </span>
+
+                                            {% endif %}
+                                        </td>
+
+                                        <td>
+                                            {% if order.tracking_number %}
+
+                                                <span class="tracking-number">
+                                                    {{ order.tracking_number }}
+                                                </span>
+
+                                            {% else %}
+
+                                                <span class="text-muted">
+                                                    Aucun
+                                                </span>
+
+                                            {% endif %}
+                                        </td>
+
+                                        <td>
+                                            <a
+                                                href="{% url 'admin_order_detail' order.id %}"
+                                                class="table-action"
+                                                title="Voir et gérer la commande"
+                                            >
+                                                <i class="fa-solid fa-eye"></i>
+                                            </a>
+                                        </td>
+
+                                    </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+                        </table>
+
+                    </div>
+
+                {% else %}
+
+                    <div class="empty-state">
+
+                        <i class="fa-solid fa-box-open fa-2x mb-3"></i>
+
+                        <p class="mb-0">
+                            Aucune commande récente à afficher.
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+            </section>
+
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+            const counters =
+                document.querySelectorAll(
+                    "[data-counter]"
+                );
+
+            counters.forEach(
+                function (element) {
+                    const target =
+                        Number.parseInt(
+                            element.dataset.counter,
+                            10
+                        ) || 0;
+
+                    if (target === 0) {
+                        element.textContent = "0";
+                        return;
+                    }
+
+                    let current = 0;
+
+                    const duration = 750;
+
+                    const steps = Math.min(
+                        Math.max(target, 1),
+                        35
+                    );
+
+                    const increment =
+                        target / steps;
+
+                    const interval =
+                        duration / steps;
+
+                    const timer =
+                        window.setInterval(
+                            function () {
+                                current += increment;
+
+                                if (current >= target) {
+                                    element.textContent =
+                                        target;
+
+                                    window.clearInterval(
+                                        timer
+                                    );
+
+                                    return;
+                                }
+
+                                element.textContent =
+                                    Math.floor(current);
+                            },
+                            interval
+                        );
+                }
+            );
+        }
+    );
+</script>
+{% endblock %}

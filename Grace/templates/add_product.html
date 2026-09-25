@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Ajouter un produit | Grace GM{% endblock %}
+
+{% block content %}
+<style>
+.ap-page{min-height:100vh;padding:38px 18px 75px;background:linear-gradient(135deg,#fffafa,#fff2f8);font-family:Arial,sans-serif;color:#332a30}.ap-wrap{max-width:920px;margin:auto}.ap-nav{display:flex;gap:9px;overflow:auto;padding:12px;margin-bottom:24px;border:1px solid #eedce5;border-radius:17px;background:#fff}.ap-nav a{padding:11px 15px;white-space:nowrap;border-radius:10px;text-decoration:none;color:#655760;font-weight:700}.ap-nav a:hover,.ap-nav a.active{background:#51203a;color:#fff}
+.ap-page{background:radial-gradient(circle at 85% 0%,#fce1ed,transparent 35%),linear-gradient(145deg,#fffafa,#fff4f8)}
+.ap-wrap{max-width:1060px}.ap-card{box-shadow:0 24px 56px #51203a20}.ap-hero{position:relative;overflow:hidden;padding:41px;background:linear-gradient(120deg,#171117,#662242)}.ap-hero::after{position:absolute;right:-70px;top:-100px;width:270px;height:270px;border:43px solid #ffffff12;border-radius:50%;content:""}.ap-hero>*{position:relative;z-index:1}.ap-hero h1{font-size:clamp(31px,4vw,44px)}
+.ap-field input,.ap-field select,.ap-field textarea{transition:border-color .2s,box-shadow .2s}.ap-field input:focus,.ap-field select:focus,.ap-field textarea:focus{box-shadow:0 0 0 4px #c4387820}.ap-field[hidden]{display:none!important}
+.ap-preview{display:none;align-items:center;gap:12px;margin-top:12px;padding:10px;border:1px solid #eedce5;border-radius:12px;background:#fff8fb}.ap-preview img{width:68px;height:68px;object-fit:cover;border-radius:9px}.ap-preview span{font-size:12px;color:#655760;overflow-wrap:anywhere}
+.ap-save{background:linear-gradient(135deg,#c43878,#982454);box-shadow:0 8px 20px #c4387830}.ap-save:hover{filter:brightness(.95)}
+.ap-card{background:#fff;border:1px solid #eedce5;border-radius:24px;overflow:hidden;box-shadow:0 18px 38px #51203a14}.ap-hero{padding:34px;background:linear-gradient(125deg,#171117,#61223e);color:#fff}.ap-hero small{font-size:12px;color:#f7b5d0;font-weight:800;letter-spacing:2px}.ap-hero h1{font-size:clamp(28px,4vw,40px);margin:10px 0 8px}.ap-hero p{margin:0;color:#f5dfe9;line-height:1.6}.ap-form{padding:32px 34px}.ap-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.ap-field{min-width:0}.ap-full{grid-column:1/-1}.ap-field label{display:block;margin-bottom:8px;font-weight:800;font-size:14px}.ap-field input,.ap-field select,.ap-field textarea{box-sizing:border-box;width:100%;padding:13px 15px;border:1px solid #e8d6df;border-radius:11px;background:#fff;color:#2e242b;font:inherit;outline:0}.ap-field input:focus,.ap-field select:focus,.ap-field textarea:focus{border-color:#c43878;box-shadow:0 0 0 3px #c4387820}.ap-field textarea{min-height:150px;resize:vertical;line-height:1.5}.ap-help{display:block;margin-top:7px;color:#84757d;font-size:12px;line-height:1.4}.ap-actions{display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap;margin-top:30px;padding-top:23px;border-top:1px solid #f0e4ea}.ap-button{padding:13px 19px;border:0;border-radius:11px;font:inherit;font-size:14px;font-weight:800;text-decoration:none;cursor:pointer}.ap-save{background:#b82d6f;color:#fff}.ap-save:hover{background:#982454}.ap-cancel{background:#f7eaf0;color:#51203a}
+@media(max-width:650px){.ap-grid{grid-template-columns:1fr}.ap-form{padding:25px 19px}.ap-hero{padding:27px 21px}.ap-actions>*{flex:1;text-align:center}}
+</style>
+
+<main class="ap-page"><div class="ap-wrap">
+ <nav class="ap-nav" aria-label="Administration"><a href="{% url 'admin_dashboard' %}">Tableau de bord</a><a href="{% url 'admin_products' %}" class="active">Produits</a><a href="{% url 'admin_orders' %}">Commandes</a><a href="{% url 'home' %}">Boutique</a></nav>
+ <section class="ap-card">
+  <header class="ap-hero"><small>ADMINISTRATION GRACE GM</small><h1>Ajouter un produit</h1><p>Complétez les informations du nouveau produit pour votre boutique.</p></header>
+  <form class="ap-form" method="post" action="{% url 'add_product' %}" enctype="multipart/form-data">
+   {% csrf_token %}
+   <div class="ap-grid">
+    <div class="ap-field"><label for="ap-category">Catégorie *</label><select id="ap-category" name="categorie" required><option value="">Choisir une catégorie</option><option value="home" {% if request.POST.categorie == 'home' %}selected{% endif %}>Produit principal</option><option value="mode" {% if request.POST.categorie == 'mode' %}selected{% endif %}>Mode</option><option value="beaute" {% if request.POST.categorie == 'beaute' %}selected{% endif %}>Beauté</option><option value="hygiene" {% if request.POST.categorie == 'hygiene' %}selected{% endif %}>Hygiène</option></select></div>
+    <div class="ap-field" id="ap-type-wrap"><label for="ap-type">Type de produit</label><input id="ap-type" name="type" type="text" value="{{ request.POST.type|default:'' }}" placeholder="Ex. vêtements, soins, accessoires"><small class="ap-help">Utilisé pour les catégories Mode, Beauté et Hygiène.</small></div>
+    <div class="ap-field ap-full"><label for="ap-name">Nom du produit *</label><input id="ap-name" name="nom" type="text" value="{{ request.POST.nom|default:'' }}" maxlength="255" required></div>
+    <div class="ap-field"><label for="ap-price">Prix régulier ($ CA) *</label><input id="ap-price" name="prix" type="number" min="0.01" step="0.01" value="{{ request.POST.prix|default:'' }}" required></div>
+    <div class="ap-field"><label for="ap-promo">Prix promotionnel ($ CA)</label><input id="ap-promo" name="prix_promo" type="number" min="0" step="0.01" value="{{ request.POST.prix_promo|default:'' }}"><small class="ap-help">Facultatif. Laissez vide s’il n’y a pas de promotion.</small></div>
+    <div class="ap-field" id="ap-stock-wrap"><label for="ap-stock">Unités en stock *</label><input id="ap-stock" name="stock" type="number" min="0" step="1" value="{{ request.POST.stock|default:'0' }}" required></div>
+    <div class="ap-field"><label for="ap-image">Image du produit</label><input id="ap-image" name="image" type="file" accept="image/*"><small class="ap-help">Choisissez une image nette du produit.</small><div class="ap-preview" id="ap-preview"><img id="ap-preview-image" alt="Aperçu du produit"><span id="ap-preview-name"></span></div></div>
+    <div class="ap-field ap-full"><label for="ap-description">Description *</label><textarea id="ap-description" name="description" required placeholder="Décrivez le produit, ses caractéristiques et ses avantages…">{{ request.POST.description|default:'' }}</textarea></div>
+   </div>
+   <div class="ap-actions"><a class="ap-button ap-cancel" href="{% url 'admin_products' %}">Annuler</a><button class="ap-button ap-save" type="submit">Enregistrer le produit</button></div>
+  </form>
+ </section>
+</div></main>
+<script>
+(() => {
+ const category = document.getElementById('ap-category');
+ const typeWrap = document.getElementById('ap-type-wrap');
+ const type = document.getElementById('ap-type');
+ const stockWrap = document.getElementById('ap-stock-wrap');
+ const stock = document.getElementById('ap-stock');
+ const update = () => {
+  const usesType = ['mode','beaute','hygiene'].includes(category.value);
+  const usesStock = ['home','mode'].includes(category.value);
+  typeWrap.hidden = !usesType;
+  type.disabled = !usesType;
+  type.required = usesType;
+  stockWrap.hidden = !usesStock;
+  stock.disabled = !usesStock;
+  stock.required = usesStock;
+ };
+ category.addEventListener('change', update);
+ update();
+ const imageInput = document.getElementById('ap-image');
+ const preview = document.getElementById('ap-preview');
+ let imageUrl;
+ imageInput.addEventListener('change', () => {
+  if (imageUrl) URL.revokeObjectURL(imageUrl);
+  const file = imageInput.files[0];
+  preview.style.display = file ? 'flex' : 'none';
+  if (file) {
+   imageUrl = URL.createObjectURL(file);
+   document.getElementById('ap-preview-image').src = imageUrl;
+   document.getElementById('ap-preview-name').textContent = file.name;
+  }
+ });
+})();
+</script>
+{% endblock %}

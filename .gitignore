@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+*.sqlite3
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.vscode/
+staticfiles/
+products/
+preuves_clientes/

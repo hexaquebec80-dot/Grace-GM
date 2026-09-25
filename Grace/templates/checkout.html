@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Finaliser ma commande | Grace GM{% endblock %}
+
+{% block content %}
+<style>
+  .grace-checkout{
+    --black:#171216;--pink:#d94f92;--pink-dark:#a72d70;--pink-soft:#fff1f7;
+    --cream:#fffaf7;--text:#332a31;--muted:#786d75;--line:#eedde6;
+    min-height:80vh;padding:55px 16px 85px;
+    background:
+      radial-gradient(circle at 8% 5%,rgba(217,79,146,.14),transparent 28%),
+      radial-gradient(circle at 92% 88%,rgba(167,45,112,.10),transparent 25%),
+      linear-gradient(135deg,#fffafc,#fff 55%,#fff6fa);
+  }
+  .grace-checkout *{box-sizing:border-box}
+  .grace-checkout .checkout-shell{max-width:1180px;margin:auto}
+  .grace-checkout .checkout-head{margin-bottom:30px;animation:checkout-rise .6s ease both}
+  .grace-checkout .eyebrow{display:inline-flex;align-items:center;gap:9px;color:var(--pink-dark);font-size:.78rem;font-weight:900;letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px}
+  .grace-checkout .eyebrow:before{content:"";width:28px;height:2px;background:var(--pink)}
+  .grace-checkout h1{margin:0;color:var(--black);font-size:clamp(2rem,4vw,3.4rem);font-weight:900;letter-spacing:-.04em}
+  .grace-checkout .head-copy{color:var(--muted);margin:10px 0 0;line-height:1.7}
+  .grace-checkout .checkout-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(330px,.75fr);gap:28px;align-items:start}
+  .grace-checkout .panel{background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:26px;box-shadow:0 22px 65px rgba(55,19,40,.09);overflow:hidden;animation:checkout-rise .7s ease both}
+  .grace-checkout .panel-body{padding:clamp(24px,4vw,42px)}
+  .grace-checkout .section-title{display:flex;align-items:center;gap:13px;color:var(--black);font-size:1.25rem;font-weight:900;margin:0 0 23px}
+  .grace-checkout .section-title i{width:43px;height:43px;display:grid;place-items:center;border-radius:14px;background:var(--pink-soft);color:var(--pink-dark)}
+  .grace-checkout .form-label{font-size:.88rem;font-weight:800;color:#493b44;margin-bottom:7px}
+  .grace-checkout .form-control,.grace-checkout .form-select{min-height:52px;border:1px solid #e8dce3;border-radius:14px;background:#fffcfd;padding:12px 15px;color:var(--text);transition:.22s}
+  .grace-checkout textarea.form-control{min-height:105px;resize:vertical}
+  .grace-checkout .form-control:focus,.grace-checkout .form-select:focus{border-color:var(--pink);background:#fff;box-shadow:0 0 0 4px rgba(217,79,146,.12);outline:0}
+  .grace-checkout .secure-note{display:flex;gap:11px;align-items:flex-start;margin-top:22px;padding:15px;border-radius:16px;background:#f8faf8;color:#5e685f;font-size:.87rem;line-height:1.55}
+  .grace-checkout .secure-note i{color:#28733a;margin-top:3px}
+  .grace-checkout .summary{position:sticky;top:25px;animation-delay:.1s}
+  .grace-checkout .summary-top{padding:25px 27px;background:linear-gradient(135deg,var(--black),#38232f);color:#fff}
+  .grace-checkout .summary-top h2{font-size:1.25rem;font-weight:900;margin:0}
+  .grace-checkout .summary-top p{color:#e8dce3;margin:6px 0 0;font-size:.88rem}
+  .grace-checkout .summary-body{padding:24px 27px}
+  .grace-checkout .order-item{display:grid;grid-template-columns:72px 1fr auto;gap:13px;align-items:center;padding:0 0 18px;margin-bottom:18px;border-bottom:1px solid var(--line)}
+  .grace-checkout .order-img{width:72px;height:72px;border-radius:17px;object-fit:contain;background:var(--pink-soft);padding:5px;border:1px solid #f1dce7}
+  .grace-checkout .order-name{font-size:.94rem;font-weight:900;color:var(--text);margin:0 0 5px;line-height:1.35}
+  .grace-checkout .order-qty{font-size:.82rem;color:var(--muted)}
+  .grace-checkout .order-price{white-space:nowrap;color:var(--pink-dark);font-weight:900;font-size:.9rem}
+  .grace-checkout .total-line{display:flex;justify-content:space-between;gap:20px;color:var(--muted);padding:8px 0}
+  .grace-checkout .total-line strong{color:var(--text)}
+  .grace-checkout .grand-total{display:flex;justify-content:space-between;align-items:end;gap:20px;border-top:1px solid var(--line);margin-top:10px;padding-top:20px;color:var(--black);font-weight:900}
+  .grace-checkout .grand-total span:last-child{color:var(--pink-dark);font-size:1.65rem;white-space:nowrap}
+  .grace-checkout .pay-btn{width:100%;border:0;border-radius:50px;margin-top:22px;padding:16px 20px;background:linear-gradient(135deg,var(--pink-dark),var(--pink));color:#fff;font-weight:900;box-shadow:0 15px 32px rgba(167,45,112,.25);transition:transform .25s,box-shadow .25s;cursor:pointer}
+  .grace-checkout .pay-btn:hover{transform:translateY(-3px);box-shadow:0 20px 38px rgba(167,45,112,.32)}
+  .grace-checkout .back-link{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:17px;color:var(--muted);font-size:.88rem;font-weight:800;text-decoration:none}
+  .grace-checkout .back-link:hover{color:var(--pink-dark)}
+  .grace-checkout .empty-checkout{text-align:center;padding:60px 25px}
+  .grace-checkout .empty-icon{width:82px;height:82px;display:grid;place-items:center;margin:0 auto 20px;border-radius:50%;background:var(--pink-soft);color:var(--pink-dark);font-size:2rem}
+  .grace-checkout .empty-checkout h2{font-weight:900;color:var(--black)}
+  .grace-checkout .empty-checkout p{color:var(--muted)}
+  .grace-checkout .shop-btn{display:inline-block;margin-top:12px;padding:14px 27px;border-radius:50px;background:var(--black);color:#fff;font-weight:900;text-decoration:none}
+  @keyframes checkout-rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+  @media(max-width:900px){.grace-checkout .checkout-grid{grid-template-columns:1fr}.grace-checkout .summary{position:static}.grace-checkout{padding-top:35px}}
+  @media(max-width:480px){.grace-checkout .panel-body,.grace-checkout .summary-body{padding:21px}.grace-checkout .summary-top{padding:22px}.grace-checkout .order-item{grid-template-columns:62px 1fr}.grace-checkout .order-img{width:62px;height:62px}.grace-checkout .order-price{grid-column:2}.grace-checkout .grand-total span:last-child{font-size:1.35rem}}
+  @media(prefers-reduced-motion:reduce){.grace-checkout .checkout-head,.grace-checkout .panel{animation:none}.grace-checkout .pay-btn{transition:none}}
+</style>
+
+<main class="grace-checkout">
+  <div class="checkout-shell">
+    <header class="checkout-head">
+      <div class="eyebrow">Commande sécurisée</div>
+      <h1>Finaliser ma commande</h1>
+      <p class="head-copy">Vérifiez vos articles et indiquez vos coordonnées de livraison.</p>
+    </header>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }} rounded-4 mb-4" role="alert">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    {% if cart_items %}
+      <form method="post" action="{% url 'checkout' %}" id="checkout-form">
+        {% csrf_token %}
+        <div class="checkout-grid">
+          <section class="panel" aria-labelledby="delivery-title">
+            <div class="panel-body">
+              <h2 class="section-title" id="delivery-title"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Informations de livraison</h2>
+
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="form-label" for="nom_complet">Nom complet</label>
+                  <input class="form-control" id="nom_complet" name="nom_complet" type="text" value="{% if user.get_full_name %}{{ user.get_full_name }}{% elif user.profile.prenom or user.profile.nom %}{{ user.profile.prenom }} {{ user.profile.nom }}{% endif %}" autocomplete="name" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="email">Adresse courriel</label>
+                  <input class="form-control" id="email" name="email" type="email" value="{{ user.email|default:'' }}" autocomplete="email" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="telephone">Téléphone</label>
+                  <input class="form-control" id="telephone" name="telephone" type="tel" value="{{ user.profile.telephone|default:'' }}" autocomplete="tel" required>
+                </div>
+                <div class="col-12">
+                  <label class="form-label" for="adresse">Adresse complète</label>
+                  <input class="form-control" id="adresse" name="adresse" type="text" value="{{ user.profile.adresse|default:'' }}" autocomplete="street-address" required>
+                </div>
+                <div class="col-md-5">
+                  <label class="form-label" for="ville">Ville</label>
+                  <input class="form-control" id="ville" name="ville" type="text" autocomplete="address-level2" required>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label" for="province">Province</label>
+                  <select class="form-select" id="province" name="province" autocomplete="address-level1" required>
+                    <option value="" selected disabled>Choisir</option>
+                    <option value="QC">Québec</option><option value="ON">Ontario</option><option value="NB">Nouveau-Brunswick</option><option value="NS">Nouvelle-Écosse</option><option value="PE">Île-du-Prince-Édouard</option><option value="NL">Terre-Neuve-et-Labrador</option><option value="MB">Manitoba</option><option value="SK">Saskatchewan</option><option value="AB">Alberta</option><option value="BC">Colombie-Britannique</option><option value="YT">Yukon</option><option value="NT">Territoires du Nord-Ouest</option><option value="NU">Nunavut</option>
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label" for="code_postal">Code postal</label>
+                  <input class="form-control" id="code_postal" name="code_postal" type="text" placeholder="A1A 1A1" maxlength="7" autocomplete="postal-code" required>
+                </div>
+                <div class="col-12">
+                  <label class="form-label" for="notes">Instructions de livraison <span class="fw-normal text-muted">(facultatif)</span></label>
+                  <textarea class="form-control" id="notes" name="notes" placeholder="Appartement, étage, indication pour le livreur…"></textarea>
+                </div>
+              </div>
+
+              <div class="secure-note"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i><span>Vos renseignements servent uniquement au traitement et à la livraison de votre commande.</span></div>
+            </div>
+          </section>
+
+          <aside class="panel summary" aria-labelledby="summary-title">
+            <div class="summary-top">
+              <h2 id="summary-title">Résumé de la commande</h2>
+              <p>{{ cart_items|length }} article{{ cart_items|length|pluralize }}</p>
+            </div>
+            <div class="summary-body">
+              {% for item in cart_items %}
+                <article class="order-item">
+                  {% if item.product and item.product.image %}
+                    <img class="order-img" src="{{ item.product.image.url }}" alt="{{ item.product.nom }}">
+                  {% elif item.mode and item.mode.image %}
+                    <img class="order-img" src="{{ item.mode.image.url }}" alt="{{ item.mode.nom }}">
+                  {% elif item.beaute and item.beaute.image %}
+                    <img class="order-img" src="{{ item.beaute.image.url }}" alt="{{ item.beaute.nom }}">
+                  {% elif item.hygiene and item.hygiene.image %}
+                    <img class="order-img" src="{{ item.hygiene.image.url }}" alt="{{ item.hygiene.nom }}">
+                  {% else %}
+                    <img class="order-img" src="{% static 'images/no-image.png' %}" alt="Produit">
+                  {% endif %}
+
+                  <div>
+                    <h3 class="order-name">
+                      {% if item.product %}{{ item.product.nom }}{% elif item.mode %}{{ item.mode.nom }}{% elif item.beaute %}{{ item.beaute.nom }}{% elif item.hygiene %}{{ item.hygiene.nom }}{% else %}Article{% endif %}
+                    </h3>
+                    <span class="order-qty">Quantité : {{ item.quantity }}</span>
+                  </div>
+                  <div class="order-price">{{ item.total_price|floatformat:2 }} $ CA</div>
+                </article>
+              {% endfor %}
+
+              <div class="total-line"><span>Sous-total</span><strong>{{ final_total|floatformat:2 }} $ CA</strong></div>
+              <div class="total-line"><span>Livraison</span><strong>Calculée à l’étape suivante</strong></div>
+              <div class="grand-total"><span>Total</span><span>{{ final_total|floatformat:2 }} $ CA</span></div>
+
+              <button class="pay-btn" type="submit"><i class="fa-solid fa-lock me-2" aria-hidden="true"></i> Procéder au paiement</button>
+              <a class="back-link" href="{% url 'cart' %}"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Retourner au panier</a>
+            </div>
+          </aside>
+        </div>
+      </form>
+    {% else %}
+      <section class="panel empty-checkout">
+        <div class="empty-icon"><i class="fa-solid fa-bag-shopping" aria-hidden="true"></i></div>
+        <h2>Votre panier est vide</h2>
+        <p>Ajoutez Flat Tummy Tea à votre panier avant de finaliser votre commande.</p>
+        <a class="shop-btn" href="{% url 'home' %}">Découvrir le produit</a>
+      </section>
+    {% endif %}
+  </div>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const postal = document.getElementById('code_postal');
+  if (postal) {
+    postal.addEventListener('input', function () {
+      let value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+      if (value.length > 3) value = value.slice(0, 3) + ' ' + value.slice(3);
+      this.value = value;
+    });
+  }
+
+  const form = document.getElementById('checkout-form');
+  if (form) {
+    form.addEventListener('submit', function () {
+      const button = form.querySelector('.pay-btn');
+      button.disabled = true;
+      button.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2" aria-hidden="true"></i> Préparation du paiement…';
+    });
+  }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  .grace-register{--forest:#164110;--leaf:#51731a;--gold:#cba451;--muted:#637260;padding:35px 0 70px}
+  .grace-register *{box-sizing:border-box}
+  .grace-register .shell{max-width:1060px;margin:auto;display:grid;grid-template-columns:.9fr 1.1fr;overflow:hidden;background:#fff;border-radius:30px;box-shadow:0 24px 70px #1641101b;border:1px solid #e4ebdc;animation:reg-rise .7s ease both}
+  .grace-register .story{position:relative;isolation:isolate;overflow:hidden;padding:clamp(32px,4vw,55px);background:linear-gradient(150deg,#164110,#315e28);color:#fff;display:flex;flex-direction:column;justify-content:space-between;min-height:620px}
+  .grace-register .story:before{content:"";position:absolute;width:340px;height:340px;border-radius:50%;background:#ffffff12;right:-120px;top:-100px;z-index:-1}
+  .grace-register .story-tag{font-size:.78rem;letter-spacing:.17em;text-transform:uppercase;font-weight:900;color:#e7e9cb}
+  .grace-register .story h1{font-size:clamp(2rem,3vw,3.3rem);font-weight:900;line-height:1.1;letter-spacing:-.04em;margin:22px 0}
+  .grace-register .story p{color:#e6efe1;line-height:1.7;max-width:380px}
+  .grace-register .product-photo{width:100%;max-width:300px;aspect-ratio:1/1;object-fit:cover;border-radius:50% 50% 24% 24%;border:6px solid #ffffffbf;box-shadow:0 22px 45px #0004;align-self:center;animation:reg-float 5s ease-in-out infinite}
+  .grace-register .form-side{padding:clamp(28px,5vw,65px)}
+  .grace-register .form-side h2{font-size:clamp(1.8rem,3vw,2.5rem);font-weight:900;color:var(--forest);margin-bottom:6px}
+  .grace-register .intro{color:var(--muted);line-height:1.65;margin-bottom:26px}
+  .grace-register .form-label{font-size:.92rem;font-weight:800;color:#27432a;margin-bottom:7px}
+  .grace-register .form-control{border-radius:14px;border:1px solid #dbe5d7;background:#fbfcf9;min-height:50px;padding:12px 15px}
+  .grace-register .form-control:focus{border-color:var(--leaf);background:#fff;box-shadow:0 0 0 4px #51731a1f}
+
+  .grace-register .password-wrap{position:relative}
+  .grace-register .password-wrap .form-control{padding-right:55px}
+  .grace-register .password-toggle{position:absolute;top:50%;right:9px;transform:translateY(-50%);display:grid;place-items:center;width:40px;height:40px;border:0;border-radius:10px;background:transparent;color:var(--forest);cursor:pointer}
+  .grace-register .password-toggle:hover,
+  .grace-register .password-toggle:focus-visible{background:#edf4e8;outline:none}
+
+  .grace-register .field-error{color:#a62c39;font-size:.86rem;margin-top:6px}
+  .grace-register .help{color:var(--muted);font-size:.83rem;line-height:1.55}
+  .grace-register .submit-btn{width:100%;border:0;border-radius:50px;background:var(--forest);color:white;padding:15px 22px;font-weight:850;box-shadow:0 13px 28px #16411036;transition:transform .25s,background .25s}
+  .grace-register .submit-btn:hover{transform:translateY(-3px);background:var(--leaf)}
+  .grace-register .login-note{text-align:center;color:var(--muted);margin-top:20px}
+  .grace-register .login-note a{color:var(--forest);font-weight:800;text-decoration:none}
+  @keyframes reg-rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes reg-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  @media(max-width:800px){.grace-register .shell{grid-template-columns:1fr}.grace-register .story{min-height:auto;gap:25px}.grace-register .product-photo{max-width:180px}}
+  @media(prefers-reduced-motion:reduce){.grace-register .shell,.grace-register .product-photo{animation:none}.grace-register .submit-btn{transition:none}}
+</style>
+
+<section class="grace-register" aria-labelledby="register-title">
+  <div class="shell">
+    <div class="story">
+      <div>
+        <span class="story-tag">Grace GM · Flat Tummy Tea</span>
+        <h1>Bienvenue dans la boutique Grace GM.</h1>
+        <p>Créez votre compte pour retrouver votre panier et passer commande.</p>
+      </div>
+      <img class="product-photo" src="{% static 'images/logoBelly.png' %}" alt="Emballage Grace GM Flat Tummy Tea">
+    </div>
+
+    <div class="form-side">
+      <h2 id="register-title">Créer un compte</h2>
+      <p class="intro">Remplissez les informations ci-dessous pour vous inscrire.</p>
+
+      <form method="post" action="{% url 'register' %}">
+        {% csrf_token %}
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label" for="id_prenom">Prénom</label>
+            <input class="form-control" id="id_prenom" name="prenom" type="text" value="{{ valeurs.prenom|default:'' }}" autocomplete="given-name" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label" for="id_nom">Nom de famille</label>
+            <input class="form-control" id="id_nom" name="nom" type="text" value="{{ valeurs.nom|default:'' }}" autocomplete="family-name" required>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="id_email">Adresse courriel</label>
+          <input class="form-control" id="id_email" name="email" type="email" value="{{ valeurs.email|default:'' }}" autocomplete="email" required>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label" for="id_telephone">Téléphone</label>
+            <input class="form-control" id="id_telephone" name="telephone" type="tel" value="{{ valeurs.telephone|default:'' }}" autocomplete="tel" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label" for="id_adresse">Adresse</label>
+            <input class="form-control" id="id_adresse" name="adresse" type="text" value="{{ valeurs.adresse|default:'' }}" autocomplete="street-address" required>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="id_username">Nom d’utilisateur</label>
+          <input class="form-control" id="id_username" name="username" type="text" value="{{ valeurs.username|default:'' }}" autocomplete="username" required>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label" for="id_password">Mot de passe</label>
+          <div class="password-wrap">
+            <input class="form-control" id="id_password" name="password" type="password" autocomplete="new-password" minlength="6" required>
+            <button class="password-toggle" id="toggle-password" type="button" aria-label="Afficher le mot de passe" aria-controls="id_password" aria-pressed="false">
+              <i class="fa-regular fa-eye" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div class="help mt-2">Au moins 6 caractères.</div>
+        </div>
+
+        <button class="submit-btn" type="submit">
+          Créer mon compte <i class="fa-solid fa-arrow-right ms-2" aria-hidden="true"></i>
+        </button>
+      </form>
+
+      <p class="login-note">Vous avez déjà un compte ? <a href="{% url 'login' %}">Se connecter</a></p>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const input = document.getElementById('id_password');
+    const button = document.getElementById('toggle-password');
+    if (!input || !button) return;
+
+    button.addEventListener('click', function () {
+      const visible = input.type === 'password';
+      input.type = visible ? 'text' : 'password';
+      button.setAttribute('aria-pressed', String(visible));
+      button.setAttribute('aria-label', visible ? 'Masquer le mot de passe' : 'Afficher le mot de passe');
+      button.querySelector('i').className = visible ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
+    });
+  });
+</script>
+{% endblock %}
