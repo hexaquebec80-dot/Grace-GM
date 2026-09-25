@@ -1,58 +1,100 @@
 from pathlib import Path
-from urllib.parse import urlparse
 
+import cloudinary
 import dj_database_url
+
 from decouple import config
 
+
+# ============================================================
+# BASE
+# ============================================================
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# --------------------------------------------------
-# SÉCURITÉ
-# --------------------------------------------------
+# ============================================================
+# SÉCURITÉ DJANGO
+# ============================================================
 
-# Créer une NOUVELLE clé : celle de l'ancien settings.py
-# a déjà été publiée dans le dépôt GitHub.
-SECRET_KEY = config("DJANGO_SECRET_KEY")
+SECRET_KEY = config(
+    "DJANGO_SECRET_KEY",
+    default="django-insecure-change-me-in-render",
+)
 
-DEBUG = config("DEBUG", default=False, cast=bool)
+DEBUG = config(
+    "DEBUG",
+    default=False,
+    cast=bool,
+)
 
-# Exemple : grace-gm.onrender.com,gracegm.com,www.gracegm.com
+
+# ============================================================
+# ALLOWED HOSTS
+# ============================================================
+
 ALLOWED_HOSTS = [
     host.strip()
     for host in config(
         "ALLOWED_HOSTS",
-        default="127.0.0.1,localhost",
+        default=(
+            "127.0.0.1,"
+            "localhost,"
+            "gracegm.com,"
+            "www.gracegm.com"
+        ),
     ).split(",")
     if host.strip()
 ]
 
-# Render fournit ce nom automatiquement au service Web.
+
+# Render ajoute normalement automatiquement cette variable.
 RENDER_EXTERNAL_HOSTNAME = config(
     "RENDER_EXTERNAL_HOSTNAME",
     default="",
 )
 
-if RENDER_EXTERNAL_HOSTNAME:
-    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+if (
+    RENDER_EXTERNAL_HOSTNAME
+    and RENDER_EXTERNAL_HOSTNAME not in ALLOWED_HOSTS
+):
+    ALLOWED_HOSTS.append(
+        RENDER_EXTERNAL_HOSTNAME
+    )
 
-# Exemple : https://grace-gm.onrender.com,https://gracegm.com
+
+# ============================================================
+# CSRF
+# ============================================================
+
 CSRF_TRUSTED_ORIGINS = [
     origin.strip()
     for origin in config(
         "CSRF_TRUSTED_ORIGINS",
-        default="",
+        default=(
+            "https://gracegm.com,"
+            "https://www.gracegm.com"
+        ),
     ).split(",")
     if origin.strip()
 ]
 
+
 if RENDER_EXTERNAL_HOSTNAME:
-    CSRF_TRUSTED_ORIGINS.append(
+    render_origin = (
         f"https://{RENDER_EXTERNAL_HOSTNAME}"
     )
 
-# Render reçoit les requêtes HTTPS derrière un proxy.
+    if render_origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(
+            render_origin
+        )
+
+
+# ============================================================
+# HTTPS / RENDER
+# ============================================================
+
 SECURE_PROXY_SSL_HEADER = (
     "HTTP_X_FORWARDED_PROTO",
     "https",
@@ -61,7 +103,7 @@ SECURE_PROXY_SSL_HEADER = (
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 
-# À activer une fois le domaine et HTTPS fonctionnels.
+
 SECURE_SSL_REDIRECT = config(
     "SECURE_SSL_REDIRECT",
     default=False,
@@ -69,64 +111,111 @@ SECURE_SSL_REDIRECT = config(
 )
 
 
-# --------------------------------------------------
+# ============================================================
 # APPLICATIONS
-# --------------------------------------------------
+# ============================================================
+
 INSTALLED_APPS = [
+
+    # Django
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
+    # Cloudinary
     "cloudinary_storage",
     "cloudinary",
+
+    # Application
     "Grace",
 ]
 
+
+# ============================================================
+# MIDDLEWARE
+# ============================================================
+
 MIDDLEWARE = [
+
     "django.middleware.security.SecurityMiddleware",
+
     "whitenoise.middleware.WhiteNoiseMiddleware",
+
     "django.contrib.sessions.middleware.SessionMiddleware",
+
     "django.middleware.common.CommonMiddleware",
+
     "django.middleware.csrf.CsrfViewMiddleware",
+
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+
     "django.contrib.messages.middleware.MessageMiddleware",
+
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+
+# ============================================================
+# URLS / WSGI
+# ============================================================
+
 ROOT_URLCONF = "Belly.urls"
+
+WSGI_APPLICATION = "Belly.wsgi.application"
+
+
+# ============================================================
+# TEMPLATES
+# ============================================================
 
 TEMPLATES = [
     {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "BACKEND": (
+            "django.template.backends.django."
+            "DjangoTemplates"
+        ),
+
         "DIRS": [
             BASE_DIR / "templates",
         ],
+
         "APP_DIRS": True,
+
         "OPTIONS": {
             "context_processors": [
+
                 "django.template.context_processors.debug",
+
                 "django.template.context_processors.request",
+
                 "django.contrib.auth.context_processors.auth",
-                "django.contrib.messages.context_processors.messages",
+
+                "django.contrib.messages."
+                "context_processors.messages",
+
                 "Grace.context_processors.cart_counter",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = "Belly.wsgi.application"
 
-
-# --------------------------------------------------
+# ============================================================
 # BASE DE DONNÉES
-# --------------------------------------------------
+# ============================================================
 
-DATABASE_URL = config("DATABASE_URL", default="")
+DATABASE_URL = config(
+    "DATABASE_URL",
+    default="",
+)
+
 
 if DATABASE_URL:
-    # Sur Render : DATABASE_URL de la base PostgreSQL.
+
+    # PostgreSQL Render
     DATABASES = {
         "default": dj_database_url.config(
             default=DATABASE_URL,
@@ -135,46 +224,55 @@ if DATABASE_URL:
             ssl_require=not DEBUG,
         )
     }
+
 else:
+
+    # En production, PostgreSQL est obligatoire.
     if not DEBUG:
         raise RuntimeError(
-            "DATABASE_URL est obligatoire quand DEBUG=False. "
-            "Ajoutez l'URL PostgreSQL dans les variables "
-            "d'environnement de Render."
+            "DATABASE_URL est obligatoire lorsque "
+            "DEBUG=False. Ajoutez DATABASE_URL dans "
+            "Render > Environment."
         )
 
-    # Uniquement pour le développement local.
+    # Développement local seulement
     DATABASES = {
         "default": {
-            "ENGINE": "django.db.backends.sqlite3",
+            "ENGINE": (
+                "django.db.backends.sqlite3"
+            ),
             "NAME": BASE_DIR / "db.sqlite3",
         }
     }
 
 
-# --------------------------------------------------
-# MOTS DE PASSE
-# --------------------------------------------------
+# ============================================================
+# VALIDATION MOTS DE PASSE
+# ============================================================
 
 AUTH_PASSWORD_VALIDATORS = [
+
     {
         "NAME": (
             "django.contrib.auth.password_validation."
             "UserAttributeSimilarityValidator"
         ),
     },
+
     {
         "NAME": (
             "django.contrib.auth.password_validation."
             "MinimumLengthValidator"
         ),
     },
+
     {
         "NAME": (
             "django.contrib.auth.password_validation."
             "CommonPasswordValidator"
         ),
     },
+
     {
         "NAME": (
             "django.contrib.auth.password_validation."
@@ -184,50 +282,136 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# --------------------------------------------------
-# LANGUE ET HEURE
-# --------------------------------------------------
+# ============================================================
+# LANGUE / DATE / HEURE
+# ============================================================
 
 LANGUAGE_CODE = "fr-ca"
+
 TIME_ZONE = "America/Toronto"
 
 USE_I18N = True
+
 USE_TZ = True
 
 
-# --------------------------------------------------
-# FICHIERS STATIQUES
-# --------------------------------------------------
+# ============================================================
+# CLOUDINARY
+# ============================================================
 
-STATIC_URL = "static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
+CLOUDINARY_CLOUD_NAME = config(
+    "CLOUDINARY_CLOUD_NAME",
+    default="",
+)
+
+CLOUDINARY_API_KEY = config(
+    "CLOUDINARY_API_KEY",
+    default="",
+)
+
+CLOUDINARY_API_SECRET = config(
+    "CLOUDINARY_API_SECRET",
+    default="",
+)
+
+
+# Configuration django-cloudinary-storage
+CLOUDINARY_STORAGE = {
+
+    "CLOUD_NAME": CLOUDINARY_CLOUD_NAME,
+
+    "API_KEY": CLOUDINARY_API_KEY,
+
+    "API_SECRET": CLOUDINARY_API_SECRET,
+
+    "SECURE": True,
+}
+
+
+# Configuration directe du SDK Cloudinary.
+# Ceci évite notamment :
+#
+# ValueError: Must supply api_key
+#
+cloudinary.config(
+    cloud_name=CLOUDINARY_CLOUD_NAME,
+    api_key=CLOUDINARY_API_KEY,
+    api_secret=CLOUDINARY_API_SECRET,
+    secure=True,
+)
+
+
+# ============================================================
+# STOCKAGE DES FICHIERS
+# ============================================================
+
 STORAGES = {
+
+    # Images / fichiers envoyés par les utilisateurs
     "default": {
-        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+        "BACKEND": (
+            "cloudinary_storage.storage."
+            "MediaCloudinaryStorage"
+        ),
     },
+
+    # CSS / JavaScript / images statiques
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": (
+            "whitenoise.storage."
+            "CompressedManifestStaticFilesStorage"
+        ),
     },
 }
 
-# Facultatif : dossier de fichiers statiques commun au projet.
-# Les dossiers Belly/static et Grace/static sont déjà trouvés
-# automatiquement par django.contrib.staticfiles.
+
+# ============================================================
+# FICHIERS STATIQUES
+# ============================================================
+
+STATIC_URL = "/static/"
+
+STATIC_ROOT = (
+    BASE_DIR / "staticfiles"
+)
+
+
+# Dossier static global facultatif
 if (BASE_DIR / "static").is_dir():
-    STATICFILES_DIRS = [BASE_DIR / "static"]
+
+    STATICFILES_DIRS = [
+        BASE_DIR / "static"
+    ]
 
 
-# --------------------------------------------------
-# FICHIERS TÉLÉVERSÉS
-# --------------------------------------------------
+# ============================================================
+# MEDIA
+# ============================================================
 
-MEDIA_URL = "media/"
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_URL = "/media/"
 
 
-# --------------------------------------------------
+# MEDIA_ROOT n'est pas réellement utilisé en production
+# lorsque Cloudinary est le stockage par défaut.
+#
+# Il reste utile en développement ou pour certains scripts.
+MEDIA_ROOT = (
+    BASE_DIR / "media"
+)
+
+
+# ============================================================
+# TYPE DE CLÉ PRIMAIRE
+# ============================================================
+
+DEFAULT_AUTO_FIELD = (
+    "django.db.models.BigAutoField"
+)
+
+
+# ============================================================
 # STRIPE
-# --------------------------------------------------
+# ============================================================
 
 STRIPE_PUBLIC_KEY = config(
     "STRIPE_PUBLIC_KEY",
@@ -245,28 +429,35 @@ STRIPE_WEBHOOK_SECRET = config(
 )
 
 
-# --------------------------------------------------
+# ============================================================
 # COURRIELS
-# --------------------------------------------------
+# ============================================================
 
 EMAIL_BACKEND = (
-    "django.core.mail.backends.smtp.EmailBackend"
+    "django.core.mail.backends.smtp."
+    "EmailBackend"
 )
 
 EMAIL_HOST = "smtp.gmail.com"
+
 EMAIL_PORT = 587
+
 EMAIL_USE_TLS = True
+
 EMAIL_USE_SSL = False
+
 
 EMAIL_HOST_USER = config(
     "EMAIL_HOST_USER",
     default="",
 )
 
+
 EMAIL_HOST_PASSWORD = config(
     "EMAIL_HOST_PASSWORD",
     default="",
 )
+
 
 DEFAULT_FROM_EMAIL = config(
     "DEFAULT_FROM_EMAIL",
@@ -274,36 +465,107 @@ DEFAULT_FROM_EMAIL = config(
 )
 
 
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+# Timeout afin d'éviter qu'une connexion SMTP
+# bloque trop longtemps le serveur.
+EMAIL_TIMEOUT = 20
 
 
-
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-        },
-    },
-    "loggers": {
-        "django.request": {
-            "handlers": ["console"],
-            "level": "ERROR",
-            "propagate": False,
-        },
-    },
-}
-
+# ============================================================
+# CONNEXION UTILISATEUR
+# ============================================================
 
 LOGIN_URL = "login"
+
 LOGIN_REDIRECT_URL = "/cart/"
 
 
+# Facultatif :
+# LOGIN_REDIRECT_URL peut être remplacé par
+# une URL Django nommée dans les vues.
 
-CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": config("CLOUDINARY_CLOUD_NAME"),
-    "API_KEY": config("CLOUDINARY_API_KEY"),
-    "API_SECRET": config("CLOUDINARY_API_SECRET"),
-    "SECURE": True,
+
+# ============================================================
+# SESSIONS
+# ============================================================
+
+SESSION_COOKIE_HTTPONLY = True
+
+CSRF_COOKIE_HTTPONLY = False
+
+SESSION_SAVE_EVERY_REQUEST = False
+
+
+# ============================================================
+# SÉCURITÉ HTTP
+# ============================================================
+
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+X_FRAME_OPTIONS = "DENY"
+
+
+# ============================================================
+# LOGGING
+# ============================================================
+
+LOGGING = {
+
+    "version": 1,
+
+    "disable_existing_loggers": False,
+
+    "formatters": {
+
+        "verbose": {
+
+            "format": (
+                "{levelname} "
+                "{asctime} "
+                "{name} "
+                "{message}"
+            ),
+
+            "style": "{",
+        },
+
+    },
+
+    "handlers": {
+
+        "console": {
+
+            "class": (
+                "logging.StreamHandler"
+            ),
+
+            "formatter": "verbose",
+        },
+
+    },
+
+    "loggers": {
+
+        "django": {
+
+            "handlers": [
+                "console"
+            ],
+
+            "level": "INFO",
+
+            "propagate": False,
+        },
+
+        "django.request": {
+
+            "handlers": [
+                "console"
+            ],
+
+            "level": "ERROR",
+
+            "propagate": False,
+        },
+
+    },
 }
