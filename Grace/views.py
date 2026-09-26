@@ -5311,86 +5311,320 @@ def admin_payments(request):
 from django.shortcuts import render, redirect
 from .models import Product, Mode, Beaute, Hygiene
 
-
+@staff_member_required
 def add_product(request):
 
     if request.method == "POST":
 
-        categorie = request.POST.get("categorie")
+        # =====================================================
+        # RÉCUPÉRATION DES CHAMPS
+        # =====================================================
 
-        nom = request.POST.get("nom")
-        description = request.POST.get("description")
+        categorie = request.POST.get(
+            "categorie",
+            ""
+        ).strip()
 
-        prix = request.POST.get("prix")
-        prix_promo = request.POST.get("prix_promo")
+        nom = request.POST.get(
+            "nom",
+            ""
+        ).strip()
 
-        stock = request.POST.get("stock")
+        description = request.POST.get(
+            "description",
+            ""
+        ).strip()
 
-        image = request.FILES.get("image")
+        prix = request.POST.get(
+            "prix",
+            ""
+        ).strip()
 
-        type_name = request.POST.get("type")
+        prix_promo = request.POST.get(
+            "prix_promo",
+            ""
+        ).strip()
 
-        # =========================
+        stock = request.POST.get(
+            "stock",
+            ""
+        ).strip()
+
+        type_name = request.POST.get(
+            "type",
+            ""
+        ).strip()
+
+        image = request.FILES.get(
+            "image"
+        )
+
+        # =====================================================
+        # VALIDATION NOM
+        # =====================================================
+
+        if not nom:
+
+            messages.error(
+                request,
+                "Veuillez entrer le nom du produit."
+            )
+
+            return render(
+                request,
+                "add_product.html",
+                {
+                    "valeurs": request.POST
+                }
+            )
+
+        # =====================================================
+        # VALIDATION PRIX
+        # =====================================================
+
+        try:
+
+            prix = Decimal(prix)
+
+            if prix < 0:
+                raise ValueError
+
+        except (
+            InvalidOperation,
+            ValueError,
+            TypeError
+        ):
+
+            messages.error(
+                request,
+                "Veuillez entrer un prix valide."
+            )
+
+            return render(
+                request,
+                "add_product.html",
+                {
+                    "valeurs": request.POST
+                }
+            )
+
+        # =====================================================
+        # PRIX PROMOTIONNEL
+        # =====================================================
+
+        if prix_promo:
+
+            try:
+
+                prix_promo = Decimal(
+                    prix_promo
+                )
+
+                if prix_promo < 0:
+                    raise ValueError
+
+            except (
+                InvalidOperation,
+                ValueError,
+                TypeError
+            ):
+
+                messages.error(
+                    request,
+                    "Veuillez entrer un prix promotionnel valide."
+                )
+
+                return render(
+                    request,
+                    "add_product.html",
+                    {
+                        "valeurs": request.POST
+                    }
+                )
+
+        else:
+
+            prix_promo = None
+
+        # =====================================================
+        # STOCK
+        # =====================================================
+
+        # Si le champ est vide :
+        # stock = 10 par défaut
+        if not stock:
+
+            stock = 10
+
+        else:
+
+            try:
+
+                stock = int(stock)
+
+                if stock < 0:
+                    stock = 0
+
+            except (
+                TypeError,
+                ValueError
+            ):
+
+                stock = 10
+
+        # =====================================================
+        # VALIDATION CATÉGORIE
+        # =====================================================
+
+        categories_valides = [
+            "mode",
+            "beaute",
+            "hygiene",
+            "home",
+        ]
+
+        if categorie not in categories_valides:
+
+            messages.error(
+                request,
+                "Veuillez sélectionner une catégorie valide."
+            )
+
+            return render(
+                request,
+                "add_product.html",
+                {
+                    "valeurs": request.POST
+                }
+            )
+
+        # =====================================================
         # MODE
-        # =========================
+        # =====================================================
+
         if categorie == "mode":
+
+            if not type_name:
+
+                messages.error(
+                    request,
+                    "Veuillez sélectionner le type du produit mode."
+                )
+
+                return render(
+                    request,
+                    "add_product.html",
+                    {
+                        "valeurs": request.POST
+                    }
+                )
 
             Mode.objects.create(
                 nom=nom,
                 description=description,
                 prix=prix,
-                prix_promo=prix_promo if prix_promo else None,
+                prix_promo=prix_promo,
                 image=image,
                 type=type_name,
-                stock=stock
+                stock=stock,
             )
 
-        # =========================
-        # BEAUTE
-        # =========================
+        # =====================================================
+        # BEAUTÉ
+        # =====================================================
+
         elif categorie == "beaute":
+
+            if not type_name:
+
+                messages.error(
+                    request,
+                    "Veuillez sélectionner le type du produit beauté."
+                )
+
+                return render(
+                    request,
+                    "add_product.html",
+                    {
+                        "valeurs": request.POST
+                    }
+                )
 
             Beaute.objects.create(
                 nom=nom,
                 description=description,
                 prix=prix,
-                prix_promo=prix_promo if prix_promo else None,
+                prix_promo=prix_promo,
                 image=image,
-                type=type_name
+                type=type_name,
             )
 
-        # =========================
-        # HYGIENE
-        # =========================
+        # =====================================================
+        # HYGIÈNE
+        # =====================================================
+
         elif categorie == "hygiene":
+
+            if not type_name:
+
+                messages.error(
+                    request,
+                    "Veuillez sélectionner le type du produit hygiène."
+                )
+
+                return render(
+                    request,
+                    "add_product.html",
+                    {
+                        "valeurs": request.POST
+                    }
+                )
 
             Hygiene.objects.create(
                 nom=nom,
                 description=description,
                 prix=prix,
-                prix_promo=prix_promo if prix_promo else None,
+                prix_promo=prix_promo,
                 image=image,
-                type=type_name
+                type=type_name,
             )
 
-        # =========================
-        # PRODUIT PRINCIPAL HOME
-        # =========================
+        # =====================================================
+        # PRODUIT PRINCIPAL / HOME
+        # =====================================================
+
         elif categorie == "home":
 
             Product.objects.create(
                 nom=nom,
                 description=description,
                 prix=prix,
-                prix_promo=prix_promo if prix_promo else None,
+                prix_promo=prix_promo,
                 image=image,
-                stock=stock
+                stock=stock,
             )
 
-        return redirect("admin_dashboard")
+        # =====================================================
+        # MESSAGE SUCCÈS
+        # =====================================================
 
-    return render(request, "add_product.html")
+        messages.success(
+            request,
+            f'Le produit « {nom} » a été ajouté avec succès.'
+        )
 
+        return redirect(
+            "admin_dashboard"
+        )
+
+    # =========================================================
+    # GET
+    # =========================================================
+
+    return render(
+        request,
+        "add_product.html"
+    )
 
 
 from django.shortcuts import render, redirect, get_object_or_404
