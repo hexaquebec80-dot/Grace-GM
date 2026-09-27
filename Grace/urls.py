@@ -415,5 +415,11 @@ urlpatterns = [
     path("add-to-cart/<int:id>/", views.add_to_cart, name="add_to_cart"),
   
     path("cart/",views.cart,name="cart",),
+
+    path(
+    "produit/<int:product_id>/partage/",
+    views.enregistrer_partage,
+    name="enregistrer_partage"
+    ),
   
 ]

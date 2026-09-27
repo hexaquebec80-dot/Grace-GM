@@ -38,6 +38,7 @@ class Product(models.Model):
         symmetrical=False,
         related_name="related_to"  
     )
+    share_count = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.nom

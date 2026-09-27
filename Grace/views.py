@@ -34364,3 +34364,38 @@ def remove_from_cart(request, product_id):
         ).delete()
 
     return redirect("cart")
+
+
+
+
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.views.decorators.http import require_POST
+from django.db.models import F
+
+from .models import Product
+
+
+@require_POST
+def enregistrer_partage(request, product_id):
+
+    product = get_object_or_404(
+        Product,
+        id=product_id
+    )
+
+    # Incrémentation sûre directement dans PostgreSQL
+    Product.objects.filter(
+        id=product.id
+    ).update(
+        share_count=F("share_count") + 1
+    )
+
+    product.refresh_from_db(
+        fields=["share_count"]
+    )
+
+    return JsonResponse({
+        "success": True,
+        "share_count": product.share_count
+    })
