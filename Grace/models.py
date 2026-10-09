@@ -158,6 +158,8 @@ class Order(models.Model):
         on_delete=models.CASCADE,
         related_name="orders",
         verbose_name="Cliente ou client",
+        null=True,
+        blank=True,
     )
 
     prenom = models.CharField(
@@ -385,7 +387,12 @@ class OrderItem(models.Model):
     
 # PAIEMENT
 class Payment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
     order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     transaction_id = models.CharField(max_length=255)

@@ -1,491 +1,108 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block content %}
+
 <style>
-    .grace-detail {
-        --green: #164110;
-        --leaf: #51731a;
-        --gold: #cba451;
-        --muted: #667466;
-        --line: #e5eadf;
-        color: #1d2c1c;
-        padding: 35px 0 65px;
-    }
-
-    .grace-detail * {
-        box-sizing: border-box;
-    }
-
-    .grace-detail .crumb {
-        font-size: .9rem;
-        color: var(--muted);
-        margin-bottom: 22px;
-    }
-
-    .grace-detail .crumb a {
-        color: var(--green);
-        text-decoration: none;
-        font-weight: 700;
-    }
-
-    .grace-detail .panel {
-        background: #fff;
-        border: 1px solid var(--line);
-        border-radius: 30px;
-        overflow: hidden;
-        box-shadow: 0 24px 60px rgba(22, 65, 16, .09);
-        animation: grace-rise .75s ease both;
-    }
-
-    .grace-detail .gallery {
-        padding: 25px;
-        background: linear-gradient(145deg, #f7f8ef, #faedf1);
-    }
-
-    .grace-detail .frame {
-        height: 500px;
-        position: relative;
-        overflow: hidden;
-        border-radius: 24px;
-        background: radial-gradient(
-            circle at center,
-            #fff 35%,
-            #f7faf3 100%
-        );
-        display: grid;
-        place-items: center;
-    }
-
-    .grace-detail .slide {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        padding: 18px;
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity .4s ease;
-    }
-
-    .grace-detail .slide.active {
-        opacity: 1;
-        visibility: visible;
-    }
-
-    .grace-detail .stock {
-        position: absolute;
-        z-index: 2;
-        top: 16px;
-        left: 16px;
-        background: #fff;
-        padding: 9px 14px;
-        border-radius: 30px;
-        color: var(--green);
-        font-size: .85rem;
-        font-weight: 800;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, .12);
-    }
-
-    .grace-detail .stock.out {
-        color: #8a4936;
-    }
-
-    .grace-detail .gallery-nav {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        margin-top: 16px;
-    }
-
-    .grace-detail .gallery-nav[hidden] {
-        display: none;
-    }
-
-    .grace-detail .gallery-nav button {
-        border: 1px solid #dce5d6;
-        background: #fff;
-        color: var(--green);
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        transition: transform .2s, background .2s;
-    }
-
-    .grace-detail .gallery-nav button:hover {
-        transform: translateY(-2px);
-        background: #eaf3e4;
-    }
-
-    .grace-detail .gallery-position {
-        color: var(--muted);
-        font-size: .9rem;
-        font-weight: 700;
-        min-width: 44px;
-        text-align: center;
-    }
-
-    .grace-detail .details {
-        padding: clamp(25px, 4vw, 55px);
-    }
-
-    .grace-detail .eyebrow {
-        letter-spacing: .16em;
-        text-transform: uppercase;
-        color: var(--leaf);
-        font-weight: 900;
-        font-size: .75rem;
-    }
-
-    .grace-detail h1 {
-        font-size: clamp(2rem, 4vw, 3.2rem);
-        font-weight: 900;
-        line-height: 1.1;
-        color: var(--green);
-        margin: 13px 0;
-    }
-
-    .grace-detail .social-row {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 12px;
-        margin: 18px 0;
-    }
-
-    .grace-detail .rating-link {
-        color: var(--green);
-        font-weight: 750;
-        text-decoration: none;
-    }
-
-    .grace-detail .rating-link:hover {
-        text-decoration: underline;
-    }
-
-    .grace-detail .rating-link i {
-        color: var(--gold);
-    }
-
-    .grace-detail .like-button {
-        border: 1px solid #e7d9df;
-        background: #fff8fa;
-        color: #8c3c61;
-        border-radius: 30px;
-        padding: 8px 13px;
-        font-weight: 800;
-        transition: transform .2s, background .2s;
-    }
-
-    .grace-detail .like-button:hover {
-        transform: translateY(-2px);
-        background: #fcebf2;
-    }
-
-    .grace-detail .like-button:hover i {
-        animation: grace-heart .55s ease;
-    }
-
-    .grace-detail .like-button[aria-pressed="true"] {
-        background: #fbe6ef;
-        color: #a62462;
-    }
-
-    .grace-detail .price-box {
-        background: #f7faf3;
-        border: 1px solid #e2eadc;
-        padding: 22px;
-        border-radius: 21px;
-        margin: 25px 0;
-    }
-
-    .grace-detail .price {
-        font-size: 2rem;
-        color: var(--green);
-        font-weight: 900;
-    }
-
-    .grace-detail .old-price {
-        color: #8b9388;
-        margin-left: 10px;
-    }
-
-    .grace-detail .price-note {
-        font-size: .85rem;
-        color: var(--muted);
-        margin-top: 4px;
-    }
-
-    .grace-detail .description {
-        line-height: 1.85;
-        color: #475547;
-        white-space: pre-line;
-    }
-
-    .grace-detail .actions {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        margin: 24px 0;
-    }
-
-    .grace-detail .cart-form {
-        display: grid;
-        grid-template-columns: 100px 1fr;
-        gap: 10px;
-    }
-
-    .grace-detail .quantity-box {
-        display: flex;
-        align-items: center;
-        overflow: hidden;
-        border: 2px solid #dce6d7;
-        border-radius: 40px;
-        background: #fff;
-    }
-
-    .grace-detail .quantity-box button {
-        width: 32px;
-        height: 100%;
-        border: 0;
-        color: var(--green);
-        background: transparent;
-        font-weight: 900;
-    }
-
-    .grace-detail .quantity-box button:hover {
-        background: #edf4e8;
-    }
-
-    .grace-detail .quantity-box input {
-        width: 36px;
-        border: 0;
-        outline: 0;
-        color: var(--green);
-        background: transparent;
-        text-align: center;
-        font-weight: 900;
-        appearance: textfield;
-        -moz-appearance: textfield;
-    }
-
-    .grace-detail .quantity-box input::-webkit-outer-spin-button,
-    .grace-detail .quantity-box input::-webkit-inner-spin-button {
-        margin: 0;
-        appearance: none;
-        -webkit-appearance: none;
-    }
-
-    .grace-detail .action {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 9px;
-        border-radius: 40px;
-        padding: 14px 17px;
-        font-weight: 800;
-        text-decoration: none;
-        text-align: center;
-        transition: transform .2s, box-shadow .2s;
-    }
-
-    .grace-detail button.action {
-        width: 100%;
-        border: 0;
-    }
-
-    .grace-detail .action:hover {
-        transform: translateY(-3px);
-    }
-
-    .grace-detail .action.primary {
-        background: var(--green);
-        color: #fff;
-        box-shadow: 0 12px 24px rgba(22, 65, 16, .19);
-    }
-
-    .grace-detail .action.secondary {
-        background: white;
-        border: 2px solid var(--green);
-        color: var(--green);
-    }
-
-    .grace-detail .service-list {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        margin-top: 22px;
-    }
-
-    .grace-detail .service-list div {
-        padding: 12px;
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        color: #526251;
-        font-size: .87rem;
-    }
-
-    .grace-detail .service-list i {
-        color: var(--leaf);
-        margin-right: 7px;
-    }
-
-    .grace-detail .reviews {
-        margin-top: 55px;
-        animation: grace-rise .85s .18s ease both;
-    }
-
-    .grace-detail .reviews h2 {
-        color: var(--green);
-        font-size: clamp(1.7rem, 3vw, 2.4rem);
-        font-weight: 900;
-    }
-
-    .grace-detail .review-intro {
-        color: var(--muted);
-    }
-
-    .grace-detail .review-card,
-    .grace-detail .review-form {
-        background: #fff;
-        border: 1px solid var(--line);
-        border-radius: 20px;
-        padding: 24px;
-        box-shadow: 0 10px 28px rgba(22, 65, 16, .05);
-    }
-
-    .grace-detail .review-card {
-        height: 100%;
-        transition: transform .3s, box-shadow .3s;
-    }
-
-    .grace-detail .review-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 17px 35px rgba(22, 65, 16, .1);
-    }
-
-    .grace-detail .review-card strong {
-        color: var(--green);
-    }
-
-    .grace-detail .review-stars {
-        color: #b7791f;
-        letter-spacing: .1em;
-    }
-
-    .grace-detail .review-card p {
-        color: #4d5b4b;
-        line-height: 1.7;
-        margin: 13px 0 0;
-        white-space: pre-line;
-    }
-
-    .grace-detail .review-form label {
-        display: block;
-        font-weight: 800;
-        color: var(--green);
-        margin: 12px 0 7px;
-    }
-
-    .grace-detail .review-form select,
-    .grace-detail .review-form textarea {
-        width: 100%;
-        border: 1px solid #d8e2d2;
-        border-radius: 14px;
-        padding: 12px;
-        background: #fff;
-    }
-
-    .grace-detail .review-form textarea {
-        min-height: 120px;
-        resize: vertical;
-    }
-
-    .grace-detail .review-form button {
-        border: 0;
-        border-radius: 30px;
-        background: var(--green);
-        color: #fff;
-        padding: 12px 24px;
-        font-weight: 800;
-        margin-top: 15px;
-    }
-
-    @keyframes grace-rise {
-        from {
-            opacity: 0;
-            transform: translateY(26px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    @keyframes grace-heart {
-        50% {
-            transform: scale(1.3);
-        }
-    }
-
-    @media (max-width: 767px) {
-        .grace-detail {
-            padding-top: 15px;
-        }
-
-        .grace-detail .frame {
-            height: 350px;
-        }
-
-        .grace-detail .gallery {
-            padding: 14px;
-        }
-
-        .grace-detail .actions,
-        .grace-detail .cart-form,
-        .grace-detail .service-list {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        .grace-detail .slide,
-        .grace-detail button,
-        .grace-detail a,
-        .grace-detail .review-card {
-            transition: none !important;
-        }
-
-        .grace-detail .panel,
-        .grace-detail .reviews,
-        .grace-detail .like-button:hover i {
-            animation: none;
-        }
-    }
+.grace-detail {
+    --green: #164110;
+    --leaf: #51731a;
+    --gold: #cba451;
+    --muted: #667466;
+    --line: #e5eadf;
+    color: #1d2c1c;
+    padding: 35px 0 65px;
+}
+
+.grace-detail * { box-sizing: border-box; }
+.grace-detail .crumb { font-size: .9rem; color: var(--muted); margin-bottom: 22px; }
+.grace-detail .crumb a { color: var(--green); text-decoration: none; font-weight: 700; }
+.grace-detail .panel { background: #fff; border: 1px solid var(--line); border-radius: 30px; overflow: hidden; box-shadow: 0 24px 60px rgba(22,65,16,.09); }
+.grace-detail .gallery { padding: 25px; background: linear-gradient(145deg,#f7f8ef,#faedf1); }
+.grace-detail .frame { height: 500px; position: relative; overflow: hidden; border-radius: 24px; background: #fff; display: grid; place-items: center; }
+.grace-detail .slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: center; padding: 18px; opacity: 0; visibility: hidden; filter: none; transform: none; }
+.grace-detail .slide.active { opacity: 1; visibility: visible; }
+.grace-detail .stock { position: absolute; z-index: 2; top: 16px; left: 16px; background: #fff; padding: 9px 14px; border-radius: 30px; color: var(--green); font-size: .85rem; font-weight: 800; box-shadow: 0 6px 20px rgba(0,0,0,.12); }
+.grace-detail .stock.out { color: #8a4936; }
+.grace-detail .gallery-nav { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 16px; }
+.grace-detail .gallery-nav[hidden] { display: none; }
+.grace-detail .gallery-nav button { border: 1px solid #dce5d6; background: #fff; color: var(--green); width: 40px; height: 40px; border-radius: 50%; }
+.grace-detail .gallery-nav button:hover { background: #eaf3e4; }
+.grace-detail .gallery-position { color: var(--muted); font-size: .9rem; font-weight: 700; min-width: 44px; text-align: center; }
+.grace-detail .details { padding: clamp(25px,4vw,55px); }
+.grace-detail .eyebrow { letter-spacing: .16em; text-transform: uppercase; color: var(--leaf); font-weight: 900; font-size: .75rem; }
+.grace-detail h1 { font-size: clamp(2rem,4vw,3.2rem); font-weight: 900; line-height: 1.1; color: var(--green); margin: 13px 0; }
+.grace-detail .social-row { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin: 18px 0; }
+.grace-detail .rating-link { color: var(--green); font-weight: 750; text-decoration: none; }
+.grace-detail .rating-link:hover { text-decoration: underline; }
+.grace-detail .rating-link i { color: var(--gold); }
+.grace-detail .like-button { border: 1px solid #e7d9df; background: #fff8fa; color: #8c3c61; border-radius: 30px; padding: 8px 13px; font-weight: 800; }
+.grace-detail .like-button:hover { background: #fcebf2; }
+.grace-detail .like-button[aria-pressed="true"] { background: #fbe6ef; color: #a62462; }
+.grace-detail .price-box { background: #f7faf3; border: 1px solid #e2eadc; padding: 22px; border-radius: 21px; margin: 25px 0; }
+.grace-detail .price { font-size: 2rem; color: var(--green); font-weight: 900; }
+.grace-detail .old-price { color: #8b9388; margin-left: 10px; }
+.grace-detail .price-note { font-size: .85rem; color: var(--muted); margin-top: 4px; }
+.grace-detail .description { line-height: 1.85; color: #475547; white-space: pre-line; }
+.grace-detail .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 24px 0; }
+.grace-detail .cart-form { display: grid; grid-template-columns: 110px 1fr; gap: 10px; }
+.grace-detail .quantity-box { display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid #dce6d7; border-radius: 40px; background: #fff; }
+.grace-detail .quantity-box button { width: 32px; height: 100%; min-height: 48px; border: 0; color: var(--green); background: transparent; font-weight: 900; }
+.grace-detail .quantity-box button:hover { background: #edf4e8; }
+.grace-detail .quantity-box input { width: 40px; border: 0; outline: 0; color: var(--green); background: transparent; text-align: center; font-weight: 900; appearance: textfield; -moz-appearance: textfield; }
+.grace-detail .quantity-box input::-webkit-outer-spin-button,
+.grace-detail .quantity-box input::-webkit-inner-spin-button { margin: 0; -webkit-appearance: none; }
+.grace-detail .action { display: inline-flex; align-items: center; justify-content: center; gap: 9px; border-radius: 40px; padding: 14px 17px; font-weight: 800; text-decoration: none; text-align: center; }
+.grace-detail button.action { width: 100%; border: 0; }
+.grace-detail .action.primary { background: var(--green); color: #fff; box-shadow: 0 12px 24px rgba(22,65,16,.19); }
+.grace-detail .action.primary:hover { background: #245c1d; }
+.grace-detail .action.secondary { background: #fff; border: 2px solid var(--green); color: var(--green); }
+.grace-detail .service-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 22px; }
+.grace-detail .service-list div { padding: 12px; border: 1px solid var(--line); border-radius: 14px; color: #526251; font-size: .87rem; }
+.grace-detail .service-list i { color: var(--leaf); margin-right: 7px; }
+.grace-detail .reviews { margin-top: 55px; }
+.grace-detail .reviews h2 { color: var(--green); font-size: clamp(1.7rem,3vw,2.4rem); font-weight: 900; }
+.grace-detail .review-intro { color: var(--muted); }
+.grace-detail .review-card,
+.grace-detail .review-form { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 24px; box-shadow: 0 10px 28px rgba(22,65,16,.05); }
+.grace-detail .review-card { height: 100%; }
+.grace-detail .review-card strong { color: var(--green); }
+.grace-detail .review-stars { color: #b7791f; letter-spacing: .1em; }
+.grace-detail .review-card p { color: #4d5b4b; line-height: 1.7; margin: 13px 0 0; white-space: pre-line; }
+.grace-detail .review-form label { display: block; font-weight: 800; color: var(--green); margin: 12px 0 7px; }
+.grace-detail .review-form select,
+.grace-detail .review-form textarea { width: 100%; border: 1px solid #d8e2d2; border-radius: 14px; padding: 12px; background: #fff; }
+.grace-detail .review-form textarea { min-height: 120px; resize: vertical; }
+.grace-detail .review-form button { border: 0; border-radius: 30px; background: var(--green); color: #fff; padding: 12px 24px; font-weight: 800; margin-top: 15px; }
+
+@media (max-width: 767px) {
+    .grace-detail { padding-top: 15px; }
+    .grace-detail .frame { height: 350px; }
+    .grace-detail .gallery { padding: 14px; }
+    .grace-detail .actions,
+    .grace-detail .service-list { grid-template-columns: 1fr; }
+    .grace-detail .cart-form { grid-template-columns: 110px 1fr; }
+}
+
+@media (max-width: 380px) {
+    .grace-detail .cart-form { grid-template-columns: 1fr; }
+}
 </style>
 
 <div class="grace-detail">
     <div class="crumb">
-        <a href="/">Accueil</a>
-        <i class="fa-solid fa-chevron-right mx-2"
-           aria-hidden="true"></i>
+        <a href="{% url 'home' %}">Accueil</a>
+        <i class="fa-solid fa-chevron-right mx-2" aria-hidden="true"></i>
         {{ product.nom }}
     </div>
 
     <div class="panel row g-0">
         <div class="col-lg-6">
             <div class="gallery">
-                <div class="frame"
-                     id="product-gallery"
-                     aria-label="Photos du produit">
+                <div class="frame" id="product-gallery" aria-label="Photos du produit">
 
                     {% if product.stock > 0 %}
                         <div class="stock">
-                            <i class="fa-solid fa-check me-1"
-                               aria-hidden="true"></i>
+                            <i class="fa-solid fa-check me-1" aria-hidden="true"></i>
                             En stock · {{ product.stock }}
                         </div>
                     {% else %}
@@ -495,63 +112,72 @@
                     {% endif %}
 
                     {% if product.image %}
-                        <img src="{{ product.image.url }}"
-                             class="slide active"
-                             alt="{{ product.nom }} — photo 1">
+                        <img
+                            src="{% if request.get_host == '127.0.0.1:8000' or request.get_host == 'localhost:8000' %}/media/{{ product.image.name }}{% else %}{{ product.image.url }}{% endif %}"
+                            class="slide active"
+                            alt="{{ product.nom }} — photo 1"
+                            decoding="async"
+                            fetchpriority="high"
+                        >
                     {% endif %}
 
                     {% if product.image2 %}
-                        <img src="{{ product.image2.url }}"
-                             class="slide"
-                             alt="{{ product.nom }} — photo 2"
-                             loading="lazy">
+                        <img
+                            src="{% if request.get_host == '127.0.0.1:8000' or request.get_host == 'localhost:8000' %}/media/{{ product.image2.name }}{% else %}{{ product.image2.url }}{% endif %}"
+                            class="slide{% if not product.image %} active{% endif %}"
+                            alt="{{ product.nom }} — photo 2"
+                            decoding="async"
+                        >
                     {% endif %}
 
                     {% if product.image3 %}
-                        <img src="{{ product.image3.url }}"
-                             class="slide"
-                             alt="{{ product.nom }} — photo 3"
-                             loading="lazy">
+                        <img
+                            src="{% if request.get_host == '127.0.0.1:8000' or request.get_host == 'localhost:8000' %}/media/{{ product.image3.name }}{% else %}{{ product.image3.url }}{% endif %}"
+                            class="slide{% if not product.image and not product.image2 %} active{% endif %}"
+                            alt="{{ product.nom }} — photo 3"
+                            decoding="async"
+                        >
                     {% endif %}
 
                     {% if product.video %}
-                        <video class="slide"
-                               muted
-                               loop
-                               playsinline
-                               controls
-                               preload="metadata">
-                            <source src="{{ product.video.url }}"
-                                    type="video/mp4">
+                        <video
+                            class="slide{% if not product.image and not product.image2 and not product.image3 %} active{% endif %}"
+                            muted
+                            loop
+                            playsinline
+                            controls
+                            preload="metadata"
+                        >
+                            <source
+                                src="{% if request.get_host == '127.0.0.1:8000' or request.get_host == 'localhost:8000' %}/media/{{ product.video.name }}{% else %}{{ product.video.url }}{% endif %}"
+                                type="video/mp4"
+                            >
+                            Votre navigateur ne prend pas en charge cette vidéo.
                         </video>
                     {% endif %}
 
                     {% if not product.image and not product.image2 and not product.image3 and not product.video %}
-                        <img src="{% static 'no-image.png' %}"
-                             class="slide active"
-                             alt="Aucune photo du produit">
+                        <img
+                            src="{% static 'no-image.png' %}"
+                            class="slide active"
+                            alt="Aucune photo du produit"
+                        >
                     {% endif %}
                 </div>
 
-                <div class="gallery-nav"
-                     id="gallery-nav"
-                     hidden>
-                    <button type="button"
-                            id="gallery-prev"
-                            aria-label="Image précédente">
-                        <i class="fa-solid fa-chevron-left"
-                           aria-hidden="true"></i>
+                <div class="gallery-nav" id="gallery-nav" hidden>
+                    <button type="button" id="gallery-prev" aria-label="Image précédente">
+                        <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
                     </button>
 
-                    <span class="gallery-position"
-                          id="gallery-position"
-                          aria-live="polite"></span>
+                    <span
+                        class="gallery-position"
+                        id="gallery-position"
+                        aria-live="polite"
+                    ></span>
 
-                    <button type="button"
-                            id="gallery-next"
-                            aria-label="Image suivante">
-                        <i class="fa-solid fa-chevron-right"
-                           aria-hidden="true"></i>
+                    <button type="button" id="gallery-next" aria-label="Image suivante">
+                        <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
                     </button>
                 </div>
             </div>
@@ -559,17 +185,13 @@
 
         <div class="col-lg-6">
             <div class="details">
-                <span class="eyebrow">
-                    Grace GM · Flat Tummy Tea
-                </span>
+                <span class="eyebrow">Grace GM · Flat Tummy Tea</span>
 
                 <h1>{{ product.nom }}</h1>
 
                 <div class="social-row">
                     <a href="#avis" class="rating-link">
-                        <i class="fa-solid fa-star"
-                           aria-hidden="true"></i>
-
+                        <i class="fa-solid fa-star" aria-hidden="true"></i>
                         {% if nombre_avis %}
                             {{ note_moyenne|floatformat:1 }}/5
                             · {{ nombre_avis }} avis
@@ -578,32 +200,34 @@
                         {% endif %}
                     </a>
 
-                    <form method="post"
-                          action="{% url 'aimer_produit' product.id %}">
+                    <form method="post" action="{% url 'aimer_produit' product.id %}">
                         {% csrf_token %}
-
-                        <button class="like-button"
-                                type="submit"
-                                aria-pressed="{% if user_likes %}true{% else %}false{% endif %}"
-                                aria-label="{% if user_likes %}Retirer mon J’aime{% else %}J’aime ce produit{% endif %}">
-                            <i class="{% if user_likes %}fa-solid{% else %}fa-regular{% endif %} fa-heart me-1"
-                               aria-hidden="true"></i>
-                            {{ nombre_likes }} J’aime
+                        <button
+                            class="like-button"
+                            type="submit"
+                            aria-pressed="{% if user_likes %}true{% else %}false{% endif %}"
+                            aria-label="{% if user_likes %}Retirer mon J’aime{% else %}J’aime ce produit{% endif %}"
+                        >
+                            <i
+                                class="{% if user_likes %}fa-solid{% else %}fa-regular{% endif %} fa-heart me-1"
+                                aria-hidden="true"
+                            ></i>
+                            {{ nombre_likes|default:0 }} J’aime
                         </button>
                     </form>
                 </div>
 
                 <div class="price-box">
-                    {% if product.prix_promo %}
+                    {% if product.prix_promo and product.prix_promo > 0 %}
                         <span class="price">
-                            {{ product.prix_promo }} $ CA
+                            {{ product.prix_promo|floatformat:2 }} $ CA
                         </span>
                         <del class="old-price">
-                            {{ product.prix }} $ CA
+                            {{ product.prix|floatformat:2 }} $ CA
                         </del>
                     {% else %}
                         <span class="price">
-                            {{ product.prix }} $ CA
+                            {{ product.prix|floatformat:2 }} $ CA
                         </span>
                     {% endif %}
 
@@ -613,83 +237,62 @@
                 </div>
 
                 {% if product.description %}
-                    <p class="description">
-                        {{ product.description|striptags }}
-                    </p>
+                    <p class="description">{{ product.description|striptags }}</p>
                 {% endif %}
 
                 {% if product.stock > 0 %}
-                    {% if user.is_authenticated %}
-                        <div class="actions">
-                            <form method="post"
-                                  action="{% url 'add_to_cart' product.id %}"
-                                  class="cart-form">
-                                {% csrf_token %}
+                    <div class="actions">
+                        <form
+                            method="post"
+                            action="{% url 'add_to_cart' product.id %}"
+                            class="cart-form"
+                        >
+                            {% csrf_token %}
 
-                                <div class="quantity-box"
-                                     aria-label="Choisir la quantité">
-                                    <button type="button"
-                                            class="quantity-minus"
-                                            aria-label="Diminuer la quantité">
-                                        −
-                                    </button>
+                            <div class="quantity-box" aria-label="Choisir la quantité">
+                                <button
+                                    type="button"
+                                    class="quantity-minus"
+                                    aria-label="Diminuer la quantité"
+                                >−</button>
 
-                                    <input type="number"
-                                           name="quantity"
-                                           value="1"
-                                           min="1"
-                                           max="{{ product.stock }}"
-                                           aria-label="Quantité"
-                                           required>
+                                <input
+                                    type="number"
+                                    name="quantity"
+                                    value="1"
+                                    min="1"
+                                    max="{{ product.stock }}"
+                                    aria-label="Quantité"
+                                    required
+                                >
 
-                                    <button type="button"
-                                            class="quantity-plus"
-                                            aria-label="Augmenter la quantité">
-                                        +
-                                    </button>
-                                </div>
+                                <button
+                                    type="button"
+                                    class="quantity-plus"
+                                    aria-label="Augmenter la quantité"
+                                >+</button>
+                            </div>
 
-                                <input type="hidden"
-                                       name="next"
-                                       value="{{ request.path }}">
+                            <button type="submit" class="action primary">
+                                <i class="fa-solid fa-cart-plus" aria-hidden="true"></i>
+                                Ajouter au panier
+                            </button>
+                        </form>
 
-                                <button type="submit"
-                                        class="action primary">
-                                    <i class="fa-solid fa-cart-plus"
-                                       aria-hidden="true"></i>
-                                    Ajouter au panier
-                                </button>
-                            </form>
-
-                            <a href="{% url 'checkout' %}"
-                               class="action secondary">
-                                <i class="fa-solid fa-bag-shopping"
-                                   aria-hidden="true"></i>
-                                Acheter maintenant
-                            </a>
-                        </div>
-                    {% else %}
-                        <div class="actions">
-                            <a href="{% url 'login' %}?next={{ request.path|urlencode }}"
-                               class="action primary">
-                                <i class="fa-solid fa-lock"
-                                   aria-hidden="true"></i>
-                                Se connecter pour acheter
-                            </a>
-                        </div>
-                    {% endif %}
+                        <a href="{% url 'checkout' %}" class="action secondary">
+                            <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i>
+                            Acheter maintenant
+                        </a>
+                    </div>
                 {% endif %}
 
                 <div class="service-list">
                     <div>
-                        <i class="fa-solid fa-truck-fast"
-                           aria-hidden="true"></i>
+                        <i class="fa-solid fa-truck-fast" aria-hidden="true"></i>
                         Livraison : détails à la commande
                     </div>
-
                     <div>
-                        <i class="fa-solid fa-lock"
-                           aria-hidden="true"></i>
+                        <i class="fa-solid fa-lock" aria-hidden="true"></i>
                         Paiement à l’étape de commande
                     </div>
                 </div>
@@ -697,15 +300,11 @@
         </div>
     </div>
 
-    <section class="reviews"
-             id="avis"
-             aria-labelledby="avis-title">
+    <section class="reviews" id="avis" aria-labelledby="avis-title">
         <h2 id="avis-title">
             Avis des clientes
             {% if nombre_avis %}
-                <span class="text-muted fs-5">
-                    ({{ nombre_avis }})
-                </span>
+                <span class="text-muted fs-5">({{ nombre_avis }})</span>
             {% endif %}
         </h2>
 
@@ -719,15 +318,14 @@
                 <div class="col-md-6">
                     <article class="review-card">
                         <div class="d-flex justify-content-between align-items-start gap-3">
-                            <strong>
-                                {{ avis_item.user.username }}
-                            </strong>
+                            <strong>{{ avis_item.user.username }}</strong>
 
-                            <span class="review-stars"
-                                  aria-label="{{ avis_item.note }} sur 5 étoiles">
+                            <span
+                                class="review-stars"
+                                aria-label="{{ avis_item.note }} sur 5 étoiles"
+                            >
                                 {{ avis_item.note }}/5
-                                <i class="fa-solid fa-star"
-                                   aria-hidden="true"></i>
+                                <i class="fa-solid fa-star" aria-hidden="true"></i>
                             </span>
                         </div>
 
@@ -740,9 +338,7 @@
                 </div>
             {% empty %}
                 <div class="col-12">
-                    <p class="review-intro">
-                        Aucun avis pour le moment.
-                    </p>
+                    <p class="review-intro">Aucun avis pour le moment.</p>
                 </div>
             {% endfor %}
         </div>
@@ -753,20 +349,12 @@
             </h3>
 
             {% if user.is_authenticated %}
-                <form method="post"
-                      action="{% url 'ajouter_avis' product.id %}">
+                <form method="post" action="{% url 'ajouter_avis' product.id %}">
                     {% csrf_token %}
 
-                    <label for="review-note">
-                        Votre note
-                    </label>
-
-                    <select id="review-note"
-                            name="note"
-                            required>
-                        <option value="">
-                            Choisir une note
-                        </option>
+                    <label for="review-note">Votre note</label>
+                    <select id="review-note" name="note" required>
+                        <option value="">Choisir une note</option>
                         <option value="5">5 étoiles</option>
                         <option value="4">4 étoiles</option>
                         <option value="3">3 étoiles</option>
@@ -774,24 +362,23 @@
                         <option value="1">1 étoile</option>
                     </select>
 
-                    <label for="review-text">
-                        Votre commentaire
-                    </label>
+                    <label for="review-text">Votre commentaire</label>
+                    <textarea
+                        id="review-text"
+                        name="commentaire"
+                        maxlength="2000"
+                        required
+                        placeholder="Partagez votre expérience"
+                    ></textarea>
 
-                    <textarea id="review-text"
-                              name="commentaire"
-                              maxlength="2000"
-                              required
-                              placeholder="Partagez votre expérience"></textarea>
-
-                    <button type="submit">
-                        Publier mon avis
-                    </button>
+                    <button type="submit">Publier mon avis</button>
                 </form>
             {% else %}
                 <p class="mb-0">
-                    <a href="{% url 'login' %}?next={{ request.path|urlencode }}"
-                       class="rating-link">
+                    <a
+                        href="{% url 'login' %}?next={{ request.path|urlencode }}"
+                        class="rating-link"
+                    >
                         Connectez-vous pour laisser un avis.
                     </a>
                 </p>
@@ -801,77 +388,96 @@
 </div>
 
 <script>
-    (() => {
-        document.querySelectorAll(".quantity-box")
-            .forEach((box) => {
-                const input = box.querySelector('input[name="quantity"]');
-                const minus = box.querySelector(".quantity-minus");
-                const plus = box.querySelector(".quantity-plus");
+(function () {
+    document.querySelectorAll('.quantity-box').forEach(function (box) {
+        const input = box.querySelector('input[name="quantity"]');
+        const minus = box.querySelector('.quantity-minus');
+        const plus = box.querySelector('.quantity-plus');
 
-                if (!input || !minus || !plus) {
-                    return;
-                }
-
-                const normalize = (value) => {
-                    const minimum = Number(input.min) || 1;
-                    const maximum = Number(input.max) || 9999;
-                    const number = Number.parseInt(value, 10) || minimum;
-                    return Math.min(maximum, Math.max(minimum, number));
-                };
-
-                minus.addEventListener("click", () => {
-                    input.value = normalize(Number(input.value) - 1);
-                });
-
-                plus.addEventListener("click", () => {
-                    input.value = normalize(Number(input.value) + 1);
-                });
-
-                input.addEventListener("change", () => {
-                    input.value = normalize(input.value);
-                });
-            });
-
-        const gallery = document.getElementById("product-gallery");
-
-        if (!gallery) {
+        if (!input || !minus || !plus) {
             return;
         }
 
-        const slides = [...gallery.querySelectorAll(".slide")];
+        function normalize(value) {
+            const minimum = Number(input.min) || 1;
+            const maximum = Number(input.max) || 9999;
+            const number = Number.parseInt(value, 10) || minimum;
 
-        if (slides.length < 2) {
-            return;
+            return Math.min(maximum, Math.max(minimum, number));
         }
 
-        const nav = document.getElementById("gallery-nav");
-        const position = document.getElementById("gallery-position");
+        minus.addEventListener('click', function () {
+            input.value = normalize(Number(input.value) - 1);
+        });
 
-        nav.hidden = false;
+        plus.addEventListener('click', function () {
+            input.value = normalize(Number(input.value) + 1);
+        });
 
-        let current = 0;
+        input.addEventListener('change', function () {
+            input.value = normalize(input.value);
+        });
+    });
 
-        function show(index) {
-            slides[current].classList.remove("active");
+    const gallery = document.getElementById('product-gallery');
 
-            if (slides[current].tagName === "VIDEO") {
-                slides[current].pause();
-            }
+    if (!gallery) {
+        return;
+    }
 
-            current = (index + slides.length) % slides.length;
+    const slides = Array.from(gallery.querySelectorAll('.slide'));
 
-            slides[current].classList.add("active");
-            position.textContent =
-                `${current + 1} / ${slides.length}`;
+    if (!slides.length) {
+        return;
+    }
+
+    let current = slides.findIndex(function (slide) {
+        return slide.classList.contains('active');
+    });
+
+    if (current < 0) {
+        current = 0;
+        slides[current].classList.add('active');
+    }
+
+    const nav = document.getElementById('gallery-nav');
+    const position = document.getElementById('gallery-position');
+    const previous = document.getElementById('gallery-prev');
+    const next = document.getElementById('gallery-next');
+
+    if (!nav || !position || !previous || !next) {
+        return;
+    }
+
+    position.textContent = (current + 1) + ' / ' + slides.length;
+
+    if (slides.length < 2) {
+        return;
+    }
+
+    nav.hidden = false;
+
+    function show(index) {
+        const oldSlide = slides[current];
+        oldSlide.classList.remove('active');
+
+        if (oldSlide.tagName === 'VIDEO') {
+            oldSlide.pause();
         }
 
-        position.textContent = `1 / ${slides.length}`;
+        current = (index + slides.length) % slides.length;
+        slides[current].classList.add('active');
+        position.textContent = (current + 1) + ' / ' + slides.length;
+    }
 
-        document.getElementById("gallery-prev")
-            .addEventListener("click", () => show(current - 1));
+    previous.addEventListener('click', function () {
+        show(current - 1);
+    });
 
-        document.getElementById("gallery-next")
-            .addEventListener("click", () => show(current + 1));
-    })();
+    next.addEventListener('click', function () {
+        show(current + 1);
+    });
+})();
 </script>
+
 {% endblock %}

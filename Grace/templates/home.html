@@ -1,2017 +1,1321 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block content %}
 
 <style>
-  .tea-page{
-    --forest:#164110;
-    --sage:#51731a;
-    --gold:#cba451;
-    --ink:#19221a;
-    --soft:#faf8f2;
-    --rose:#c65287;
-    --line:#e8e9df;
-    color:var(--ink);
-    font-family:'Segoe UI',Arial,sans-serif;
-  }
+.tea-page {
+    --forest: #164110;
+    --sage: #51731a;
+    --gold: #cba451;
+    --ink: #19221a;
+    --soft: #faf8f2;
+    --rose: #c65287;
+    --line: #e8e9df;
+    color: var(--ink);
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
 
-  .tea-page *{box-sizing:border-box}
-  .tea-page a{text-decoration:none}
-  .tea-page .tea-shell{max-width:1200px;margin:auto}
+.tea-page * { box-sizing: border-box; }
+.tea-page a { text-decoration: none; }
 
-  .tea-page .tea-hero{
-    position:relative;
-    overflow:hidden;
-    isolation:isolate;
-    border-radius:32px;
-    background:linear-gradient(
-      120deg,
-      #fffefa 0%,
-      #f5f6e9 62%,
-      #f8e9ed 100%
+.tea-page.tea-shell {
+    max-width: 1200px;
+    margin: auto;
+}
+
+/* IMAGES : proportions conservées et aucun zoom */
+.tea-page img {
+    display: block;
+    width: auto !important;
+    height: auto !important;
+    max-width: min(
+        100%,
+        var(--image-native-width, 100%)
+    ) !important;
+    aspect-ratio: auto !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    filter: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    transition: none !important;
+    image-rendering: auto;
+    margin-inline: auto;
+}
+
+.tea-page .tea-hero {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    border-radius: 32px;
+    background: linear-gradient(
+        120deg,
+        #fffefa 0%,
+        #f5f6e9 62%,
+        #f8e9ed 100%
     );
-    padding:clamp(26px,5vw,70px);
-    box-shadow:0 24px 65px rgba(22,65,16,.10);
-  }
+    padding: clamp(26px, 5vw, 70px);
+    box-shadow: 0 24px 65px rgba(22, 65, 16, .10);
+}
 
-  .tea-page .tea-hero:before,
-  .tea-page .tea-hero:after{
-    content:"";
-    position:absolute;
-    border-radius:50%;
-    z-index:-1;
-    pointer-events:none;
-  }
+.tea-page .tea-hero::before {
+    content: "";
+    position: absolute;
+    width: 510px;
+    height: 510px;
+    right: -140px;
+    top: -180px;
+    border-radius: 50%;
+    border: 1px solid rgba(22, 65, 16, .13);
+    z-index: -1;
+    pointer-events: none;
+}
 
-  .tea-page .tea-hero:before{
-    width:510px;
-    height:510px;
-    right:-140px;
-    top:-180px;
-    border:1px solid rgba(22,65,16,.13);
-  }
+.tea-page .tea-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--forest);
+    text-transform: uppercase;
+    letter-spacing: .16em;
+    font-weight: 800;
+    font-size: .75rem;
+}
 
-  .tea-page .tea-hero:after{
-    width:380px;
-    height:380px;
-    left:-230px;
-    bottom:-260px;
-    background:rgba(203,164,81,.13);
-    filter:blur(8px);
-  }
+.tea-page h1 {
+    font-size: clamp(2.25rem, 4.4vw, 4.15rem);
+    line-height: 1.1;
+    letter-spacing: -.045em;
+    font-weight: 900;
+    color: var(--forest);
+    margin: 18px 0 20px;
+    max-width: 680px;
+}
 
-  .tea-page .tea-kicker{
-    display:inline-flex;
-    align-items:center;
-    gap:10px;
-    color:var(--forest);
-    text-transform:uppercase;
-    letter-spacing:.16em;
-    font-weight:800;
-    font-size:.75rem;
-  }
+.tea-page h1 span { color: inherit; }
 
-  .tea-page .tea-kicker:before{content:none}
+.tea-page .tea-lead {
+    color: #4c594b;
+    font-size: 1.08rem;
+    line-height: 1.75;
+    max-width: 520px;
+}
 
-  .tea-page h1{
-    font-size:clamp(2.25rem,4.4vw,4.15rem);
-    line-height:1.1;
-    letter-spacing:-.045em;
-    font-weight:900;
-    color:var(--forest);
-    margin:18px 0 20px;
-    max-width:680px;
-  }
+.tea-page .tea-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+    margin: 28px 0;
+}
 
-  .tea-page h1 span{
-    color:inherit;
-    text-decoration:none;
-  }
+.tea-page .tea-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--forest);
+    color: #fff;
+    padding: 15px 25px;
+    font-weight: 800;
+    box-shadow: 0 12px 26px rgba(22, 65, 16, .2);
+    transition: background .25s, box-shadow .25s;
+}
 
-  .tea-page .tea-lead{
-    color:#4c594b;
-    font-size:1.08rem;
-    line-height:1.75;
-    max-width:520px;
-  }
+.tea-page .tea-button:hover {
+    background: var(--sage);
+    color: #fff;
+    box-shadow: 0 18px 30px rgba(22, 65, 16, .25);
+}
 
-  .tea-page .tea-hero-actions{
-    display:flex;
-    flex-wrap:wrap;
-    gap:14px;
-    align-items:center;
-    margin:28px 0;
-  }
+.tea-page .tea-secondary {
+    font-weight: 800;
+    color: var(--forest);
+    padding: 10px 2px;
+}
 
-  .tea-page .tea-button{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    gap:12px;
-    border:0;
-    border-radius:999px;
-    background:var(--forest);
-    color:#fff;
-    padding:15px 25px;
-    font-weight:800;
-    box-shadow:0 12px 26px rgba(22,65,16,.2);
-    transition:
-      transform .25s,
-      background .25s,
-      box-shadow .25s;
-  }
+.tea-page .tea-secondary:hover { color: var(--sage); }
 
-  .tea-page .tea-button:hover{
-    transform:translateY(-3px);
-    background:var(--sage);
-    color:#fff;
-    box-shadow:0 18px 30px rgba(22,65,16,.25);
-  }
+.tea-page .tea-hero-facts {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 32px;
+    color: #5b6958;
+    font-size: .85rem;
+}
 
-  .tea-page .tea-secondary{
-    font-weight:800;
-    color:var(--forest);
-    padding:10px 2px;
-    border-bottom:0;
-    text-decoration:none;
-  }
+.tea-page .tea-hero-facts span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
 
-  .tea-page .tea-secondary:hover{
-    color:var(--sage);
-    text-decoration:none;
-  }
+.tea-page .tea-hero-facts i { color: var(--sage); }
 
-  .tea-page .tea-hero-facts{
-    display:flex;
-    gap:20px;
-    flex-wrap:wrap;
-    margin-top:32px;
-    color:#5b6958;
-    font-size:.85rem;
-  }
+.tea-page .tea-stage {
+    position: relative;
+    max-width: 475px;
+    margin: 0 auto;
+}
 
-  .tea-page .tea-hero-facts span{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-  }
+.tea-page .tea-stage img {
+    max-height: 560px;
+    border-radius: 24px;
+    box-shadow: 0 26px 60px rgba(29, 40, 25, .22);
+}
 
-  .tea-page .tea-hero-facts i{
-    color:var(--sage);
-  }
+.tea-page .tea-stage-note {
+    width: fit-content;
+    margin: 16px auto 0;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 12px 16px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, .12);
+    font-size: .84rem;
+    font-weight: 900;
+    color: var(--forest);
+}
 
-  .tea-page .tea-stage{
-    position:relative;
-    max-width:475px;
-    margin:0 auto;
-    padding:12px;
-  }
+.tea-page .tea-stage-note i {
+    color: var(--rose);
+    margin-right: 8px;
+}
 
-  .tea-page .tea-stage:before{
-    content:"";
-    position:absolute;
-    inset:5% 1%;
-    border-radius:43% 43% 30% 30%;
-    background:#eaf0df;
-    transform:rotate(-6deg);
-  }
+.tea-page .tea-section { padding: 76px 0; }
 
-  .tea-page .tea-stage img{
-    position:relative;
-    width:100%;
-    aspect-ratio:4/5;
-    display:block;
-    object-fit:contain;
-    object-position:center;
-    border-radius:42% 42% 28% 28%;
-    border:9px solid #fff;
-    box-shadow:0 26px 60px rgba(29,40,25,.22);
-  }
+.tea-page .tea-heading {
+    max-width: 680px;
+    margin: 0 auto 34px;
+    text-align: center;
+}
 
-  .tea-page .tea-stage-note{
-    position:absolute;
-    bottom:30px;
-    left:-12px;
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:18px;
-    padding:12px 16px;
-    box-shadow:0 12px 28px rgba(0,0,0,.12);
-    font-size:.84rem;
-    font-weight:900;
-    color:var(--forest);
-  }
+.tea-page .tea-heading h2 {
+    font-weight: 900;
+    letter-spacing: -.04em;
+    color: var(--forest);
+    font-size: clamp(1.9rem, 3.3vw, 3.1rem);
+    margin: 11px 0;
+}
 
-  .tea-page .tea-stage-note i{
-    color:var(--rose);
-    margin-right:8px;
-  }
+.tea-page .tea-heading p {
+    color: #687366;
+    line-height: 1.65;
+    margin: 0;
+}
 
-  .tea-page .tea-section{
-    padding:76px 0;
-  }
+.tea-page .tea-benefits {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
 
-  .tea-page .tea-heading{
-    max-width:680px;
-    margin:0 auto 34px;
-    text-align:center;
-  }
+.tea-page .tea-benefit {
+    padding: 28px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    box-shadow: 0 12px 32px rgba(22, 65, 16, .06);
+}
 
-  .tea-page .tea-heading h2{
-    font-weight:900;
-    letter-spacing:-.04em;
-    color:var(--forest);
-    font-size:clamp(1.9rem,3.3vw,3.1rem);
-    margin:11px 0;
-  }
+.tea-page .tea-benefit > i {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    background: #edf4e7;
+    color: var(--forest);
+    border-radius: 15px;
+    font-size: 1.2rem;
+}
 
-  .tea-page .tea-heading p{
-    color:#687366;
-    line-height:1.65;
-    margin:0;
-  }
+.tea-page .tea-benefit h3 {
+    font-size: 1.05rem;
+    font-weight: 850;
+    color: var(--forest);
+    margin: 18px 0 9px;
+}
 
-  .tea-page .tea-products-grid{
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:22px;
-  }
+.tea-page .tea-benefit p {
+    color: #687366;
+    font-size: .94rem;
+    line-height: 1.6;
+    margin: 0;
+}
 
-  .tea-page .tea-products-grid .tea-product{
-    margin:0;
-    display:flex;
-    flex-direction:column;
-    overflow:hidden;
-  }
-
-  .tea-page .tea-products-grid .tea-product-visual{
-    min-height:320px;
-    display:grid;
-    place-items:center;
-  }
-
-  .tea-page .tea-products-grid .tea-product-visual img{
-    width:100%;
-    height:320px;
-    object-fit:contain;
-    object-position:center;
-    background:#fff;
-  }
-
-  .tea-page .tea-products-grid .tea-product-info{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-  }
-
-  .tea-page .tea-products-grid .tea-product-info .tea-button{
-    margin-top:auto;
-    align-self:flex-start;
-  }
-
-  .tea-page .tea-benefits{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:16px;
-  }
-
-  .tea-page .tea-benefit{
-    padding:28px;
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:22px;
-    box-shadow:0 12px 32px rgba(22,65,16,.06);
-  }
-
-  .tea-page .tea-benefit i{
-    width:48px;
-    height:48px;
-    display:grid;
-    place-items:center;
-    background:#edf4e7;
-    color:var(--forest);
-    border-radius:15px;
-    font-size:1.2rem;
-  }
-
-  .tea-page .tea-benefit h3{
-    font-size:1.05rem;
-    font-weight:850;
-    color:var(--forest);
-    margin:18px 0 9px;
-  }
-
-  .tea-page .tea-benefit p{
-    color:#687366;
-    font-size:.94rem;
-    line-height:1.6;
-    margin:0;
-  }
-
-  .tea-page .tea-ad{
-    position:relative;
-    overflow:hidden;
-    isolation:isolate;
-    margin:0 0 76px;
-    padding:clamp(24px,4vw,48px);
-    border-radius:34px;
-    background:linear-gradient(
-      135deg,
-      #130d12 0%,
-      #24121d 55%,
-      #45142d 100%
+.tea-page .tea-ad {
+    position: relative;
+    overflow: hidden;
+    margin: 0 0 76px;
+    padding: clamp(24px, 4vw, 48px);
+    border-radius: 34px;
+    background: linear-gradient(
+        135deg,
+        #130d12 0%,
+        #24121d 55%,
+        #45142d 100%
     );
-    color:#fff;
-    box-shadow:0 30px 75px rgba(33,12,25,.25);
-  }
+    color: #fff;
+    box-shadow: 0 30px 75px rgba(33, 12, 25, .25);
+}
 
-  .tea-page .tea-ad:before{
-    content:"";
-    position:absolute;
-    width:460px;
-    height:460px;
-    border-radius:50%;
-    right:-190px;
-    top:-210px;
-    background:radial-gradient(
-      circle,
-      rgba(230,74,145,.35),
-      transparent 68%
+.tea-page .tea-ad-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 28px;
+}
+
+.tea-page .tea-ad-head .tea-kicker { color: #f3a8ca; }
+
+.tea-page .tea-ad-head h2 {
+    max-width: 700px;
+    margin: 10px 0 0;
+    color: #fff;
+    font-size: clamp(2rem, 4vw, 3.65rem);
+    font-weight: 900;
+    line-height: 1.07;
+    letter-spacing: -.045em;
+}
+
+.tea-page .tea-ad-badge {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 16px;
+    border: 1px solid rgba(255, 255, 255, .2);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .08);
+    font-size: .82rem;
+    font-weight: 800;
+}
+
+.tea-page .tea-ad-grid {
+    display: grid;
+    grid-template-columns: 1.15fr .85fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.tea-page .tea-ad-main,
+.tea-page .tea-ad-small {
+    position: relative;
+    overflow: hidden;
+    min-height: 0;
+    border-radius: 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.tea-page .tea-ad-main { background: #090708; }
+.tea-page .tea-ad-small { background: #ead1dc; }
+
+.tea-page .tea-ad-main img { max-height: 620px; }
+.tea-page .tea-ad-small img { max-height: 440px; }
+
+.tea-page .tea-ad-overlay {
+    position: static;
+    width: 100%;
+    padding: 20px 8px 6px;
+}
+
+.tea-page .tea-ad-overlay strong {
+    display: block;
+    font-size: clamp(1.35rem, 2.2vw, 2rem);
+    font-weight: 900;
+}
+
+.tea-page .tea-ad-overlay span {
+    display: block;
+    margin-top: 7px;
+    color: #eedbe5;
+    line-height: 1.55;
+}
+
+.tea-page .tea-ad-side {
+    display: grid;
+    grid-template-rows: auto auto;
+    align-content: start;
+    gap: 20px;
+}
+
+.tea-page .tea-ad-details {
+    padding: 28px;
+    border: 1px solid rgba(255, 255, 255, .13);
+    border-radius: 25px;
+    background: rgba(255, 255, 255, .075);
+}
+
+.tea-page .tea-ad-details h3 {
+    margin: 0 0 17px;
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: 900;
+}
+
+.tea-page .tea-ad-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 0 0 22px;
+    padding: 0;
+    list-style: none;
+}
+
+.tea-page .tea-ad-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #f3e7ed;
+    font-size: .91rem;
+    line-height: 1.4;
+}
+
+.tea-page .tea-ad-list i {
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #d64185;
+    color: #fff;
+}
+
+.tea-page .tea-ad-details p {
+    margin: 0;
+    color: #d9c8d1;
+    font-size: .87rem;
+    line-height: 1.6;
+}
+
+.tea-page .tea-ad-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 23px;
+}
+
+.tea-page .tea-ad .tea-button {
+    background: #e34d91;
+    box-shadow: 0 13px 28px rgba(227, 77, 145, .3);
+}
+
+.tea-page .tea-ad .tea-button:hover { background: #f063a4; }
+
+.tea-page .tea-ad-link {
+    color: #fff;
+    font-weight: 800;
+    padding: 11px 3px;
+}
+
+.tea-page .tea-ad-link:hover { color: #f3a8ca; }
+
+.tea-page .tea-products-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.tea-page .tea-product {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--line);
+    border-radius: 30px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 24px 58px rgba(22, 65, 16, .09);
+}
+
+.tea-page .tea-product-visual {
+    display: grid;
+    place-items: center;
+    min-height: 0;
+    padding: 20px;
+    background: radial-gradient(
+        circle at center,
+        #fff 0%,
+        #f4e8eb 70%,
+        #ebecd9 100%
     );
-    z-index:-1;
-    animation:tea-ad-glow 7s ease-in-out infinite alternate;
-  }
-
-  .tea-page .tea-ad-head{
-    display:flex;
-    align-items:end;
-    justify-content:space-between;
-    gap:24px;
-    margin-bottom:28px;
-  }
-
-  .tea-page .tea-ad-head .tea-kicker{
-    color:#f3a8ca;
-  }
-
-  .tea-page .tea-ad-head h2{
-    max-width:700px;
-    margin:10px 0 0;
-    color:#fff;
-    font-size:clamp(2rem,4vw,3.65rem);
-    font-weight:900;
-    line-height:1.07;
-    letter-spacing:-.045em;
-  }
-
-  .tea-page .tea-ad-badge{
-    flex:0 0 auto;
-    display:inline-flex;
-    align-items:center;
-    gap:10px;
-    padding:11px 16px;
-    border:1px solid rgba(255,255,255,.2);
-    border-radius:999px;
-    background:rgba(255,255,255,.08);
-    backdrop-filter:blur(8px);
-    font-size:.82rem;
-    font-weight:800;
-  }
-
-  .tea-page .tea-ad-grid{
-    display:grid;
-    grid-template-columns:1.15fr .85fr;
-    gap:20px;
-  }
-
-  .tea-page .tea-ad-main{
-    position:relative;
-    overflow:hidden;
-    min-height:650px;
-    border-radius:25px;
-    background:#090708;
-  }
-
-  .tea-page .tea-ad-main img,
-  .tea-page .tea-ad-small img{
-    width:100%;
-    height:100%;
-    display:block;
-    object-fit:contain;
-    object-position:center;
-    transition:transform .8s cubic-bezier(.2,.7,.2,1);
-  }
-
-  .tea-page .tea-ad-main:hover img,
-  .tea-page .tea-ad-small:hover img{
-    transform:scale(1.035);
-  }
-
-  .tea-page .tea-ad-overlay{
-    position:absolute;
-    inset:auto 0 0;
-    padding:110px 30px 28px;
-    background:linear-gradient(
-      transparent,
-      rgba(9,5,8,.92)
-    );
-    pointer-events:none;
-  }
-
-  .tea-page .tea-ad-overlay strong{
-    display:block;
-    font-size:clamp(1.35rem,2.2vw,2rem);
-    font-weight:900;
-  }
-
-  .tea-page .tea-ad-overlay span{
-    display:block;
-    margin-top:7px;
-    color:#eedbe5;
-    line-height:1.55;
-  }
-
-  .tea-page .tea-ad-side{
-    display:grid;
-    grid-template-rows:1fr auto;
-    gap:20px;
-  }
-
-  .tea-page .tea-ad-small{
-    position:relative;
-    overflow:hidden;
-    min-height:330px;
-    border-radius:25px;
-    background:#ead1dc;
-  }
-
-  .tea-page .tea-ad-details{
-    padding:28px;
-    border:1px solid rgba(255,255,255,.13);
-    border-radius:25px;
-    background:rgba(255,255,255,.075);
-    backdrop-filter:blur(10px);
-  }
-
-  .tea-page .tea-ad-details h3{
-    margin:0 0 17px;
-    color:#fff;
-    font-size:1.25rem;
-    font-weight:900;
-  }
-
-  .tea-page .tea-ad-list{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:12px;
-    margin:0 0 22px;
-    padding:0;
-    list-style:none;
-  }
-
-  .tea-page .tea-ad-list li{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    color:#f3e7ed;
-    font-size:.91rem;
-    line-height:1.4;
-  }
-
-  .tea-page .tea-ad-list i{
-    flex:0 0 34px;
-    width:34px;
-    height:34px;
-    display:grid;
-    place-items:center;
-    border-radius:50%;
-    background:#d64185;
-    color:#fff;
-  }
-
-  .tea-page .tea-ad-details p{
-    margin:0;
-    color:#d9c8d1;
-    font-size:.87rem;
-    line-height:1.6;
-  }
-
-  .tea-page .tea-ad-actions{
-    display:flex;
-    align-items:center;
-    flex-wrap:wrap;
-    gap:14px;
-    margin-top:23px;
-  }
-
-  .tea-page .tea-ad .tea-button{
-    background:#e34d91;
-    box-shadow:0 13px 28px rgba(227,77,145,.3);
-  }
-
-  .tea-page .tea-ad .tea-button:hover{
-    background:#f063a4;
-  }
-
-  .tea-page .tea-ad-link{
-    color:#fff;
-    font-weight:800;
-    padding:11px 3px;
-  }
-
-  .tea-page .tea-ad-link:hover{
-    color:#f3a8ca;
-  }
-
-  .tea-page .tea-product{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    border:1px solid var(--line);
-    border-radius:30px;
-    overflow:hidden;
-    background:#fff;
-    box-shadow:0 24px 58px rgba(22,65,16,.09);
-  }
-
-  .tea-page .tea-product-visual{
-    display:grid;
-    place-items:center;
-    min-height:480px;
-    padding:22px;
-    background:radial-gradient(
-      circle at center,
-      #fff 0%,
-      #f4e8eb 70%,
-      #ebecd9 100%
-    );
-  }
-
-  .tea-page .tea-product-visual img{
-    display:block;
-    width:100%;
-    max-height:470px;
-    object-fit:contain;
-    object-position:center;
-    border-radius:17px;
-  }
-
-  .tea-page .tea-product-info{
-    align-self:center;
-    padding:clamp(28px,5vw,65px);
-  }
-
-  .tea-page .tea-product-info h3{
-    font-size:clamp(1.8rem,3vw,2.8rem);
-    line-height:1.13;
-    font-weight:900;
-    color:var(--forest);
-    margin:14px 0;
-  }
-
-  .tea-page .tea-product-info p{
-    color:#637060;
-    line-height:1.7;
-  }
-
-  .tea-page .tea-rule{
-    border-top:1px solid var(--line);
-    margin:26px 0;
-  }
-
-  .tea-page .tea-price{
-    font-size:2.3rem;
-    line-height:1.1;
-    color:var(--forest);
-    font-weight:900;
-  }
-
-  .tea-page .tea-price-old{
-    color:#858e80;
-    font-size:1rem;
-    margin-left:12px;
-  }
-
-  .tea-page .tea-currency{
-    display:block;
-    color:#6d786b;
-    font-size:.86rem;
-    margin-top:5px;
-  }
-
-  .tea-page .tea-product-info .tea-button{
-    margin-top:25px;
-  }
-
-  .tea-page .tea-proof{
-    border-radius:30px;
-    background:linear-gradient(
-      135deg,
-      #f2f6eb,
-      #fcf6f3
-    );
-    padding:clamp(25px,5vw,55px);
-    margin:5px 0 55px;
-  }
-
-  .tea-page .tea-proof-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:18px;
-  }
-
-  .tea-page .tea-proof-card{
-    overflow:hidden;
-    background:#fff;
-    border-radius:20px;
-    box-shadow:0 10px 30px rgba(22,65,16,.08);
-  }
-
-  .tea-page .tea-proof-card img{
-    width:100%;
-    aspect-ratio:4/3;
-    object-fit:contain;
-    object-position:center;
-    display:block;
-  }
-
-  .tea-page .tea-proof-body{
-    padding:22px;
-  }
-
-  .tea-page .tea-proof-body strong{
-    color:var(--forest);
-  }
-
-  .tea-page .tea-proof-body p{
-    color:#5f6c5c;
-    line-height:1.6;
-    margin:8px 0 0;
-  }
-
-  .tea-page .tea-disclaimer{
-    color:#697669;
-    font-size:.85rem;
-    line-height:1.6;
-    text-align:center;
-    margin:28px 0 0;
-  }
-
-  .tea-page .product-share{
-    margin-top:20px;
-    padding-top:18px;
-    border-top:1px solid var(--line);
-  }
-
-  .tea-page .share-header{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-    flex-wrap:wrap;
-    margin-bottom:12px;
-  }
-
-  .tea-page .share-title{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    color:var(--forest);
-    font-size:.9rem;
-    font-weight:850;
-  }
-
-  .tea-page .share-count{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    padding:7px 11px;
-    border-radius:999px;
-    background:#f2f6ed;
-    color:#53634f;
-    font-size:.78rem;
-    font-weight:800;
-  }
-
-  .tea-page .share-buttons{
-    display:flex;
-    align-items:center;
-    flex-wrap:wrap;
-    gap:10px;
-  }
-
-  .tea-page .share-btn{
-    width:43px;
-    height:43px;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    border:none;
-    border-radius:50%;
-    color:#fff;
-    cursor:pointer;
-    font-size:1.08rem;
-    transition:
-      transform .22s ease,
-      box-shadow .22s ease;
-  }
-
-  .tea-page .share-btn:hover{
-    transform:translateY(-3px) scale(1.05);
-    color:#fff;
-  }
-
-  .tea-page .share-facebook{
-    background:#1877f2;
-    box-shadow:0 9px 19px rgba(24,119,242,.25);
-  }
-
-  .tea-page .share-whatsapp{
-    background:#25d366;
-    box-shadow:0 9px 19px rgba(37,211,102,.24);
-  }
-
-  .tea-page .share-native{
-    background:var(--forest);
-    box-shadow:0 9px 19px rgba(22,65,16,.22);
-  }
-
-  .tea-page .share-copy{
-    background:#687366;
-    box-shadow:0 9px 19px rgba(0,0,0,.14);
-  }
-
-  .tea-page .share-feedback{
-    min-height:20px;
-    margin:9px 0 0;
-    color:#60705d;
-    font-size:.78rem;
-    font-weight:700;
-  }
-
-  .tea-page .tea-hero{
-    background-size:150% 150%;
-    animation:tea-gradient 13s ease-in-out infinite alternate;
-  }
-
-  .tea-page .tea-stage{
-    animation:tea-float 5s ease-in-out infinite;
-  }
-
-  .tea-page .tea-stage-note{
-    animation:tea-note 4.5s ease-in-out infinite;
-  }
-
-  .tea-page .tea-benefit,
-  .tea-page .tea-proof-card{
-    transition:
-      transform .35s ease,
-      box-shadow .35s ease;
-  }
-
-  .tea-page .tea-benefit:hover,
-  .tea-page .tea-proof-card:hover{
-    transform:translateY(-9px);
-    box-shadow:0 22px 42px rgba(22,65,16,.16);
-  }
-
-  .tea-page .tea-button i{
-    transition:transform .3s ease;
-  }
-
-  .tea-page .tea-button:hover i{
-    transform:translateX(5px);
-  }
-
-  .tea-page.tea-motion .tea-reveal{
-    opacity:0;
-    transform:translateY(38px);
-    transition:
-      opacity .8s ease,
-      transform .8s cubic-bezier(.2,.7,.2,1);
-    transition-delay:var(--delay,0ms);
-  }
-
-  .tea-page.tea-motion .tea-reveal.tea-visible{
-    opacity:1;
-    transform:translateY(0);
-  }
-
-  @keyframes tea-gradient{
-    from{background-position:0 50%}
-    to{background-position:100% 50%}
-  }
-
-  @keyframes tea-float{
-    0%,100%{transform:translateY(0)}
-    50%{transform:translateY(-14px)}
-  }
-
-  @keyframes tea-note{
-    0%,100%{transform:rotate(-3deg)}
-    50%{transform:rotate(2deg)}
-  }
-
-  @keyframes tea-ad-glow{
-    from{
-      transform:scale(.9);
-      opacity:.65
-    }
-
-    to{
-      transform:scale(1.14);
-      opacity:1
-    }
-  }
-
-  @media(max-width:991px){
-    .tea-page .tea-hero{text-align:center}
-    .tea-page .tea-lead{margin:auto}
+}
+
+.tea-page .tea-product-visual img {
+    max-height: 360px;
+    border-radius: 17px;
+}
+
+.tea-page .tea-product-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: clamp(24px, 4vw, 45px);
+}
+
+.tea-page .tea-product-info h3 {
+    font-size: clamp(1.8rem, 3vw, 2.8rem);
+    line-height: 1.13;
+    font-weight: 900;
+    color: var(--forest);
+    margin: 14px 0;
+}
+
+.tea-page .tea-product-info p {
+    color: #637060;
+    line-height: 1.7;
+}
+
+.tea-page .tea-rule {
+    border-top: 1px solid var(--line);
+    margin: 26px 0;
+}
+
+.tea-page .tea-price {
+    font-size: 2.3rem;
+    line-height: 1.1;
+    color: var(--forest);
+    font-weight: 900;
+}
+
+.tea-page .tea-price-old {
+    color: #858e80;
+    font-size: 1rem;
+    margin-top: 8px;
+}
+
+.tea-page .tea-currency {
+    display: block;
+    color: #6d786b;
+    font-size: .86rem;
+    margin-top: 5px;
+}
+
+.tea-page .tea-product-info .tea-button {
+    margin-top: 25px;
+    align-self: flex-start;
+}
+
+.tea-page .tea-proof {
+    border-radius: 30px;
+    background: linear-gradient(135deg, #f2f6eb, #fcf6f3);
+    padding: clamp(25px, 5vw, 55px);
+    margin: 5px 0 55px;
+}
+
+.tea-page .tea-proof-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.tea-page .tea-proof-card {
+    overflow: hidden;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(22, 65, 16, .08);
+}
+
+.tea-page .tea-proof-card img {
+    max-height: 400px;
+    padding: 12px;
+}
+
+.tea-page .tea-proof-body { padding: 22px; }
+.tea-page .tea-proof-body strong { color: var(--forest); }
+
+.tea-page .tea-proof-body p {
+    color: #5f6c5c;
+    line-height: 1.6;
+    margin: 8px 0 0;
+}
+
+.tea-page .tea-disclaimer {
+    color: #697669;
+    font-size: .85rem;
+    line-height: 1.6;
+    text-align: center;
+    margin: 28px 0 0;
+}
+
+.tea-page .product-share {
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+}
+
+.tea-page .share-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.tea-page .share-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--forest);
+    font-size: .9rem;
+    font-weight: 850;
+}
+
+.tea-page .share-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 11px;
+    border-radius: 999px;
+    background: #f2f6ed;
+    color: #53634f;
+    font-size: .78rem;
+    font-weight: 800;
+}
+
+.tea-page .share-buttons {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.tea-page .share-btn {
+    width: 43px;
+    height: 43px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    cursor: pointer;
+    font-size: 1.08rem;
+}
+
+.tea-page .share-btn:hover { opacity: .85; }
+.tea-page .share-facebook { background: #1877f2; }
+.tea-page .share-whatsapp { background: #25d366; }
+.tea-page .share-native { background: var(--forest); }
+.tea-page .share-copy { background: #687366; }
+
+.tea-page .share-feedback {
+    min-height: 20px;
+    margin: 9px 0 0;
+    color: #60705d;
+    font-size: .78rem;
+    font-weight: 700;
+}
+
+@media (max-width: 991px) {
+    .tea-page .tea-hero { text-align: center; }
+    .tea-page .tea-lead { margin: auto; }
+
     .tea-page .tea-hero-actions,
-    .tea-page .tea-hero-facts{justify-content:center}
-    .tea-page .tea-stage{margin-top:25px}
-    .tea-page .tea-ad-grid{grid-template-columns:1fr}
-    .tea-page .tea-ad-main{min-height:600px}
-    .tea-page .tea-ad-small{min-height:520px}
-    .tea-page .tea-product{grid-template-columns:1fr}
-    .tea-page .tea-product-visual{min-height:350px}
-  }
+    .tea-page .tea-hero-facts {
+        justify-content: center;
+    }
 
-  @media(max-width:767px){
+    .tea-page .tea-stage { margin-top: 25px; }
+    .tea-page .tea-ad-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 767px) {
     .tea-page .tea-benefits,
-    .tea-page .tea-proof-grid{
-      grid-template-columns:1fr;
+    .tea-page .tea-proof-grid,
+    .tea-page .tea-products-grid {
+        grid-template-columns: 1fr;
     }
 
-    .tea-page .tea-section{
-      padding:55px 0;
+    .tea-page .tea-section { padding: 55px 0; }
+    .tea-page .tea-hero { padding: 35px 24px; }
+    .tea-page .tea-stage img { max-height: 420px; }
+
+    .tea-page .tea-ad {
+        margin-bottom: 55px;
+        border-radius: 26px;
     }
 
-    .tea-page .tea-stage-note{
-      left:14px;
+    .tea-page .tea-ad-head,
+    .tea-page .share-header {
+        align-items: flex-start;
+        flex-direction: column;
     }
 
-    .tea-page .tea-hero{
-      padding:35px 24px;
-    }
+    .tea-page .tea-ad-list { grid-template-columns: 1fr; }
 
-    .tea-page .tea-ad{
-      margin-bottom:55px;
-      border-radius:26px;
+    .tea-page .tea-ad-main img,
+    .tea-page .tea-ad-small img {
+        max-height: 480px;
     }
-
-    .tea-page .tea-ad-head{
-      align-items:flex-start;
-      flex-direction:column;
-    }
-
-    .tea-page .tea-ad-main{
-      min-height:510px;
-    }
-
-    .tea-page .tea-ad-small{
-      min-height:390px;
-    }
-
-    .tea-page .tea-ad-list{
-      grid-template-columns:1fr;
-    }
-
-    .tea-page .tea-ad-overlay{
-      padding:90px 20px 22px;
-    }
-
-    .tea-page .share-header{
-      align-items:flex-start;
-      flex-direction:column;
-    }
-  }
-
-  @media(max-width:720px){
-    .tea-page .tea-products-grid{
-      grid-template-columns:1fr;
-    }
-  }
-
-  @media(prefers-reduced-motion:reduce){
-    .tea-page .tea-hero,
-    .tea-page .tea-stage,
-    .tea-page .tea-stage-note{
-      animation:none;
-    }
-
-    .tea-page .tea-button,
-    .tea-page .tea-benefit,
-    .tea-page .tea-proof-card{
-      transition:none;
-    }
-
-    .tea-page.tea-motion .tea-reveal{
-      opacity:1;
-      transform:none;
-      transition:none;
-    }
-  }
+}
 </style>
-
 
 <div class="tea-page tea-shell">
 
-  <section class="tea-hero" aria-labelledby="tea-title">
+    <section class="tea-hero" aria-labelledby="tea-title">
+        <div class="row align-items-center g-5">
 
-    <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <span class="tea-kicker">
+                    La boutique Grace GM
+                </span>
 
-      <div class="col-lg-6">
+                <h1 id="tea-title">
+                    Un instant de thé,
+                    <span>tout simplement.</span>
+                </h1>
 
-        <span class="tea-kicker">
-          La boutique Grace GM
-        </span>
+                <p class="tea-lead">
+                    Découvrez les produits Grace GM ajoutés dans notre boutique.
+                    Consultez leur photo, leur prix et leurs détails avant de commander.
+                </p>
 
-        <h1 id="tea-title">
-          Un instant de thé,
-          <span>tout simplement.</span>
-        </h1>
+                <div class="tea-hero-actions">
+                    {% if product %}
+                        <a href="{% url 'product_detail' product.id %}"
+                           class="tea-button">
+                            Voir le produit
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    {% else %}
+                        <a href="#produit" class="tea-button">
+                            Découvrir le thé
+                            <i class="fa-solid fa-arrow-down"></i>
+                        </a>
+                    {% endif %}
 
-        <p class="tea-lead">
-          Découvrez les produits Grace GM ajoutés dans notre boutique.
-          Consultez leur photo, leur prix et leurs détails avant de commander.
-        </p>
+                    {% if preuves %}
+                        <a href="#temoignages" class="tea-secondary">
+                            Voir les témoignages
+                        </a>
+                    {% endif %}
+                </div>
 
-        <div class="tea-hero-actions">
+                <div class="tea-hero-facts">
+                    <span>
+                        <i class="fa-solid fa-mug-hot"></i>
+                        Produits Grace GM
+                    </span>
+                    <span>
+                        <i class="fa-solid fa-dollar-sign"></i>
+                        Prix en $ CA
+                    </span>
+                </div>
+            </div>
 
-          {% if product %}
+            <div class="col-lg-6">
+                <div class="tea-stage">
+                    <img
+                        src="{% static 'images/gracegm_hero.webp' %}"
+                        alt="Sachet noir et rose Grace GM Flat Tummy Tea dans un décor rose"
+                        fetchpriority="high"
+                        decoding="async"
+                    >
 
-          <a href="{% url 'product_detail' product.id %}" class="tea-button">
-            Voir le produit
-            <i class="fa-solid fa-arrow-up-right-from-square"></i>
-          </a>
-
-          {% else %}
-
-          <a href="#produit" class="tea-button">
-            Découvrir le thé
-            <i class="fa-solid fa-arrow-down"></i>
-          </a>
-
-          {% endif %}
-
-          {% if preuves %}
-
-          <a href="#temoignages" class="tea-secondary">
-            Voir les témoignages
-          </a>
-
-          {% endif %}
-
-        </div>
-
-        <div class="tea-hero-facts">
-
-          <span>
-            <i class="fa-solid fa-mug-hot"></i>
-            Produits Grace GM
-          </span>
-
-          <span>
-            <i class="fa-solid fa-dollar-sign"></i>
-            Prix en $ CA
-          </span>
-
-        </div>
-
-      </div>
-
-
-      <div class="col-lg-6">
-
-        <div class="tea-stage">
-
-          <img
-            src="{% static 'images/gracegm_hero.webp' %}"
-            alt="Sachet noir et rose Grace GM Flat Tummy Tea dans un décor rose"
-            fetchpriority="high"
-          >
-
-          <div class="tea-stage-note">
-            <i class="fa-solid fa-heart"></i>
-            Grace GM · Flat Tummy Tea
-          </div>
+                    <div class="tea-stage-note">
+                        <i class="fa-solid fa-heart"></i>
+                        Grace GM · Flat Tummy Tea
+                    </div>
+                </div>
+            </div>
 
         </div>
+    </section>
 
-      </div>
+    <section class="tea-section" aria-labelledby="tea-discover">
 
-    </div>
-
-  </section>
-
-
-  <section class="tea-section" aria-labelledby="tea-discover">
-
-    <div class="tea-heading">
-
-      <span class="tea-kicker">
-        Les produits Grace GM
-      </span>
-
-      <h2 id="tea-discover">
-        Découvrez Grace GM
-      </h2>
-
-      <p>
-        Découvrez les produits disponibles et consultez leur fiche avant de commander.
-      </p>
-
-    </div>
-
-
-    <div class="tea-benefits">
-
-      <div class="tea-benefit">
-
-        <i class="fa-solid fa-leaf"></i>
-
-        <h3>
-          Une infusion en sachets
-        </h3>
-
-        <p>
-          Consultez la fiche du produit pour connaître sa composition et les indications fournies par la vendeuse.
-        </p>
-
-      </div>
-
-
-      <div class="tea-benefit">
-
-        <i class="fa-solid fa-tag"></i>
-
-        <h3>
-          Un prix clair
-        </h3>
-
-        <p>
-          Le prix de vente est présenté sur la page en dollars canadiens.
-        </p>
-
-      </div>
-
-
-      <div class="tea-benefit">
-
-        <i class="fa-solid fa-comment-dots"></i>
-
-        <h3>
-          Des expériences partagées
-        </h3>
-
-        <p>
-          Les photos et témoignages publiés par la vendeuse apparaissent plus bas.
-        </p>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <section
-    class="tea-ad"
-    id="publicite"
-    aria-labelledby="tea-ad-title"
-  >
-
-    <div class="tea-ad-head">
-
-      <div>
-
-        <span class="tea-kicker">
-          L’expérience Grace GM
-        </span>
-
-        <h2 id="tea-ad-title">
-          Votre rituel de thé pendant 28 jours
-        </h2>
-
-      </div>
-
-      <span class="tea-ad-badge">
-
-        <i class="fa-solid fa-mug-hot"></i>
-
-        28 sachets de thé
-
-      </span>
-
-    </div>
-
-
-    <div class="tea-ad-grid">
-
-      <article class="tea-ad-main">
-
-        <img
-          src="{% static 'images/gracegm_pub_main.webp' %}"
-          alt="Publicité Grace GM Flat Tummy Tea avec une tasse de thé"
-          loading="lazy"
-        >
-
-        <div class="tea-ad-overlay">
-
-          <strong>
-            Flat Tummy Tea par Grace GM
-          </strong>
-
-          <span>
-            Une présentation élégante pour accompagner votre moment de bien-être quotidien.
-          </span>
-
+        <div class="tea-heading">
+            <span class="tea-kicker">Les produits Grace GM</span>
+            <h2 id="tea-discover">Découvrez Grace GM</h2>
+            <p>
+                Découvrez les produits disponibles et consultez leur fiche
+                avant de commander.
+            </p>
         </div>
 
-      </article>
+        <div class="tea-benefits">
 
+            <div class="tea-benefit">
+                <i class="fa-solid fa-leaf"></i>
+                <h3>Une infusion en sachets</h3>
+                <p>
+                    Consultez la fiche du produit pour connaître sa composition
+                    et les indications fournies par la vendeuse.
+                </p>
+            </div>
 
-      <div class="tea-ad-side">
+            <div class="tea-benefit">
+                <i class="fa-solid fa-tag"></i>
+                <h3>Un prix clair</h3>
+                <p>
+                    Le prix de vente est présenté sur la page en dollars canadiens.
+                </p>
+            </div>
 
-        <article class="tea-ad-small">
+            <div class="tea-benefit">
+                <i class="fa-solid fa-comment-dots"></i>
+                <h3>Des expériences partagées</h3>
+                <p>
+                    Les photos et témoignages publiés par la vendeuse
+                    apparaissent plus bas.
+                </p>
+            </div>
 
-          <img
-            src="{% static 'images/gracegm_pub_side.webp' %}"
-            alt="Sachet Grace GM Flat Tummy Tea présenté sur un décor rose"
-            loading="lazy"
-          >
+        </div>
+    </section>
 
+    <section class="tea-ad"
+             id="publicite"
+             aria-labelledby="tea-ad-title">
+
+        <div class="tea-ad-head">
+            <div>
+                <span class="tea-kicker">L’expérience Grace GM</span>
+                <h2 id="tea-ad-title">
+                    Votre rituel de thé pendant 28 jours
+                </h2>
+            </div>
+
+            <span class="tea-ad-badge">
+                <i class="fa-solid fa-mug-hot"></i>
+                28 sachets de thé
+            </span>
+        </div>
+
+        <div class="tea-ad-grid">
+
+            <article class="tea-ad-main">
+                <img
+                    src="{% static 'images/gracegm_pub_main.webp' %}"
+                    alt="Publicité Grace GM Flat Tummy Tea avec une tasse de thé"
+                    loading="lazy"
+                    decoding="async"
+                >
+
+                <div class="tea-ad-overlay">
+                    <strong>Flat Tummy Tea par Grace GM</strong>
+                    <span>
+                        Une présentation élégante pour accompagner votre
+                        moment de bien-être quotidien.
+                    </span>
+                </div>
+            </article>
+
+            <div class="tea-ad-side">
+
+                <article class="tea-ad-small">
+                    <img
+                        src="{% static 'images/gracegm_pub_side.webp' %}"
+                        alt="Sachet Grace GM Flat Tummy Tea présenté sur un décor rose"
+                        loading="lazy"
+                        decoding="async"
+                    >
+                </article>
+
+                <div class="tea-ad-details">
+                    <h3>Un produit présenté en détail</h3>
+
+                    <ul class="tea-ad-list">
+                        <li>
+                            <i class="fa-solid fa-calendar-days"></i>
+                            <span>Programme de 28 jours</span>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-box-open"></i>
+                            <span>28 sachets individuels</span>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-mug-saucer"></i>
+                            <span>Préparation simple en tasse</span>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-leaf"></i>
+                            <span>Infusion à base de plantes</span>
+                        </li>
+                    </ul>
+
+                    <p>
+                        Consultez la fiche du produit pour voir la composition
+                        complète, les conseils de préparation, les précautions
+                        et les informations fournies sur l’emballage.
+                    </p>
+
+                    <div class="tea-ad-actions">
+                        {% if product %}
+                            <a href="{% url 'product_detail' product.id %}"
+                               class="tea-button">
+                                Découvrir et commander
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                        {% else %}
+                            <a href="#produit" class="tea-button">
+                                Voir le produit
+                                <i class="fa-solid fa-arrow-down"></i>
+                            </a>
+                        {% endif %}
+
+                        <a href="#emballage" class="tea-ad-link">
+                            Voir l’emballage
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <article class="tea-ad-small mt-4" id="emballage">
+            <img
+                src="{% static 'images/gracegm_pub_extra.webp' %}"
+                alt="Vue avant et arrière de l’emballage Grace GM Flat Tummy Tea"
+                loading="lazy"
+                decoding="async"
+            >
         </article>
 
+    </section>
 
-        <div class="tea-ad-details">
+    <section class="tea-section pt-0"
+             id="produit"
+             aria-labelledby="tea-product-title">
 
-          <h3>
-            Un produit présenté en détail
-          </h3>
-
-          <ul class="tea-ad-list">
-
-            <li>
-              <i class="fa-solid fa-calendar-days"></i>
-              <span>Programme de 28 jours</span>
-            </li>
-
-            <li>
-              <i class="fa-solid fa-box-open"></i>
-              <span>28 sachets individuels</span>
-            </li>
-
-            <li>
-              <i class="fa-solid fa-mug-saucer"></i>
-              <span>Préparation simple en tasse</span>
-            </li>
-
-            <li>
-              <i class="fa-solid fa-leaf"></i>
-              <span>Infusion à base de plantes</span>
-            </li>
-
-          </ul>
-
-          <p>
-            Consultez la fiche du produit pour voir la composition complète,
-            les conseils de préparation, les précautions et les informations
-            fournies sur l’emballage.
-          </p>
-
-          <div class="tea-ad-actions">
-
-            {% if product %}
-
-            <a
-              href="{% url 'product_detail' product.id %}"
-              class="tea-button"
-            >
-              Découvrir et commander
-              <i class="fa-solid fa-arrow-right"></i>
-            </a>
-
-            {% else %}
-
-            <a href="#produit" class="tea-button">
-              Voir le produit
-              <i class="fa-solid fa-arrow-down"></i>
-            </a>
-
-            {% endif %}
-
-            <a href="#emballage" class="tea-ad-link">
-              Voir l’emballage
-            </a>
-
-          </div>
-
+        <div class="tea-heading">
+            <span class="tea-kicker">Boutique Grace GM</span>
+            <h2 id="tea-product-title">Nos produits</h2>
+            <p>
+                Découvrez nos produits, leurs photos et leurs prix.
+            </p>
         </div>
 
-      </div>
+        <div class="tea-products-grid">
 
-    </div>
+            {% for item in products %}
 
+                <article class="tea-product">
 
-    <article class="tea-ad-small mt-4" id="emballage">
+                    <div class="tea-product-visual">
+                        {% if item.image %}
+                            {% if request.get_host == "127.0.0.1:8000" or request.get_host == "localhost:8000" %}
+                                <img
+                                    src="/media/{{ item.image.name }}"
+                                    alt="{{ item.nom }}"
+                                    loading="lazy"
+                                    decoding="async"
+                                >
+                            {% else %}
+                                <img
+                                    src="{{ item.image.url }}"
+                                    alt="{{ item.nom }}"
+                                    loading="lazy"
+                                    decoding="async"
+                                >
+                            {% endif %}
+                        {% else %}
+                            <span aria-label="Image non disponible">
+                                Image à venir
+                            </span>
+                        {% endif %}
+                    </div>
 
-      <img
-        src="{% static 'images/gracegm_pub_extra.webp' %}"
-        alt="Vue avant et arrière de l’emballage Grace GM Flat Tummy Tea"
-        loading="lazy"
-      >
+                    <div class="tea-product-info">
+                        <span class="tea-kicker">Grace GM</span>
+                        <h3>{{ item.nom }}</h3>
 
-    </article>
+                        {% if item.description %}
+                            <p>
+                                {{ item.description|striptags|truncatewords:48 }}
+                            </p>
+                        {% endif %}
 
-  </section>
+                        <div class="tea-rule"></div>
 
+                        {% if item.prix_promo and item.prix_promo > 0 %}
+                            <span class="tea-price">
+                                {{ item.prix_promo }} $ CA
+                            </span>
+                            <del class="tea-price-old">
+                                {{ item.prix }} $ CA
+                            </del>
+                        {% else %}
+                            <span class="tea-price">
+                                {{ item.prix }} $ CA
+                            </span>
+                        {% endif %}
 
-  <section
-    class="tea-section pt-0"
-    id="produit"
-    aria-labelledby="tea-product-title"
-  >
+                        <span class="tea-currency">
+                            Prix affiché en dollars canadiens.
+                        </span>
 
-    <div class="tea-heading">
+                        <a href="{% url 'product_detail' item.id %}"
+                           class="tea-button">
+                            Voir la fiche et commander
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
 
-      <span class="tea-kicker">
-        Boutique Grace GM
-      </span>
+                        <div
+                            class="product-share"
+                            data-product-id="{{ item.id }}"
+                            data-product-name="{{ item.nom|escape }}"
+                            data-product-url="{% url 'product_detail' item.id %}"
+                            data-register-url="{% url 'enregistrer_partage' item.id %}"
+                        >
 
-      <h2 id="tea-product-title">
-        Nos produits
-      </h2>
+                            <div class="share-header">
 
-      <p>
-        Les produits ajoutés dans l’administration s’affichent ici avec leur propre photo,
-        leur prix et leur fiche.
-      </p>
+                                <span class="share-title">
+                                    <i class="fa-solid fa-share-nodes"></i>
+                                    Partager ce produit
+                                </span>
 
-    </div>
+                                <span class="share-count" aria-live="polite">
+                                    <i class="fa-solid fa-share"></i>
 
+                                    <span class="share-count-value">
+                                        {{ item.share_count|default:0 }}
+                                    </span>
 
-    <div class="tea-products-grid">
+                                    <span class="share-count-label">
+                                        partage{% if item.share_count != 1 %}s{% endif %}
+                                    </span>
+                                </span>
 
-      {% for item in products %}
+                            </div>
 
-      <article class="tea-product">
+                            <div class="share-buttons">
 
-        <div class="tea-product-visual">
+                                <button
+                                    type="button"
+                                    class="share-btn share-facebook"
+                                    data-network="facebook"
+                                    title="Partager sur Facebook"
+                                    aria-label="Partager sur Facebook"
+                                >
+                                    <i class="fa-brands fa-facebook-f"></i>
+                                </button>
 
-          {% if item.image %}
+                                <button
+                                    type="button"
+                                    class="share-btn share-whatsapp"
+                                    data-network="whatsapp"
+                                    title="Partager sur WhatsApp"
+                                    aria-label="Partager sur WhatsApp"
+                                >
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                </button>
 
-            {% if request.get_host == "127.0.0.1:8000" or request.get_host == "localhost:8000" %}
+                                <button
+                                    type="button"
+                                    class="share-btn share-native"
+                                    data-network="native"
+                                    title="Plus d’options de partage"
+                                    aria-label="Plus d’options de partage"
+                                >
+                                    <i class="fa-solid fa-share-nodes"></i>
+                                </button>
 
-              <img
-                src="/media/{{ item.image.name }}"
-                alt="{{ item.nom }}"
-                loading="lazy"
-              >
+                                <button
+                                    type="button"
+                                    class="share-btn share-copy"
+                                    data-network="copy"
+                                    title="Copier le lien"
+                                    aria-label="Copier le lien"
+                                >
+                                    <i class="fa-solid fa-link"></i>
+                                </button>
 
-            {% else %}
+                            </div>
 
-              <img
-                src="{{ item.image.url }}"
-                alt="{{ item.nom }}"
-                loading="lazy"
-              >
+                            <p class="share-feedback" aria-live="polite"></p>
 
-            {% endif %}
+                        </div>
+                    </div>
 
-          {% else %}
+                </article>
 
-            <span aria-label="Image non disponible">
-              Image à venir
-            </span>
+            {% empty %}
 
-          {% endif %}
+                <p class="text-center text-muted">
+                    Les produits seront bientôt disponibles.
+                </p>
+
+            {% endfor %}
 
         </div>
+    </section>
 
+    {% if preuves %}
 
-        <div class="tea-product-info">
+        <section class="tea-proof"
+                 id="temoignages"
+                 aria-labelledby="tea-testimonials">
 
-          <span class="tea-kicker">
-            Grace GM
-          </span>
+            <div class="tea-heading">
+                <span class="tea-kicker">La parole aux clientes</span>
+                <h2 id="tea-testimonials">Photos et témoignages</h2>
+                <p>
+                    Des expériences que les clientes ont accepté de partager.
+                </p>
+            </div>
 
-          <h3>
-            {{ item.nom }}
-          </h3>
+            <div class="tea-proof-grid">
 
-          {% if item.description %}
+                {% for preuve in preuves %}
 
-          <p>
-            {{ item.description|striptags|truncatewords:48 }}
-          </p>
+                    <article class="tea-proof-card">
 
-          {% endif %}
+                        {% if preuve.image %}
+                            {% if request.get_host == "127.0.0.1:8000" or request.get_host == "localhost:8000" %}
+                                <img
+                                    src="/media/{{ preuve.image.name }}"
+                                    alt="Photo partagée par {{ preuve.nom_affiche|default:'une cliente' }}"
+                                    loading="lazy"
+                                    decoding="async"
+                                >
+                            {% else %}
+                                <img
+                                    src="{{ preuve.image.url }}"
+                                    alt="Photo partagée par {{ preuve.nom_affiche|default:'une cliente' }}"
+                                    loading="lazy"
+                                    decoding="async"
+                                >
+                            {% endif %}
+                        {% endif %}
 
+                        <div class="tea-proof-body">
+                            {% if preuve.nom_affiche %}
+                                <strong>{{ preuve.nom_affiche }}</strong>
+                            {% endif %}
 
-          <div class="tea-rule"></div>
+                            {% if preuve.temoignage %}
+                                <p>{{ preuve.temoignage }}</p>
+                            {% endif %}
+                        </div>
 
+                    </article>
 
-          {% if item.prix_promo and item.prix_promo > 0 %}
-
-          <span class="tea-price">
-            {{ item.prix_promo }} $ CA
-          </span>
-
-          <del class="tea-price-old">
-            {{ item.prix }} $ CA
-          </del>
-
-          {% else %}
-
-          <span class="tea-price">
-            {{ item.prix }} $ CA
-          </span>
-
-          {% endif %}
-
-
-          <span class="tea-currency">
-            Prix affiché en dollars canadiens.
-          </span>
-
-
-          <a
-            href="{% url 'product_detail' item.id %}"
-            class="tea-button"
-          >
-            Voir la fiche et commander
-            <i class="fa-solid fa-arrow-right"></i>
-          </a>
-
-
-          <div
-            class="product-share"
-            data-product-id="{{ item.id }}"
-            data-product-name="{{ item.nom|escape }}"
-            data-product-url="{% url 'product_detail' item.id %}"
-            data-register-url="{% url 'enregistrer_partage' item.id %}"
-          >
-
-            <div class="share-header">
-
-              <span class="share-title">
-
-                <i class="fa-solid fa-share-nodes"></i>
-
-                Partager ce produit
-
-              </span>
-
-
-              <span class="share-count" aria-live="polite">
-
-                <i class="fa-solid fa-share"></i>
-
-                <span class="share-count-value">
-                  {{ item.share_count|default:0 }}
-                </span>
-
-                <span class="share-count-label">
-                  partage{% if item.share_count != 1 %}s{% endif %}
-                </span>
-
-              </span>
+                {% endfor %}
 
             </div>
 
+            <p class="tea-disclaimer">
+                Photos publiées avec l’autorisation des personnes concernées.
+                Les expériences peuvent varier.
+            </p>
 
-            <div class="share-buttons">
+        </section>
 
-              <button
-                type="button"
-                class="share-btn share-facebook"
-                data-network="facebook"
-                title="Partager sur Facebook"
-              >
-                <i class="fa-brands fa-facebook-f"></i>
-              </button>
-
-
-              <button
-                type="button"
-                class="share-btn share-whatsapp"
-                data-network="whatsapp"
-                title="Partager sur WhatsApp"
-              >
-                <i class="fa-brands fa-whatsapp"></i>
-              </button>
-
-
-              <button
-                type="button"
-                class="share-btn share-native"
-                data-network="native"
-                title="Plus d'options de partage"
-              >
-                <i class="fa-solid fa-share-nodes"></i>
-              </button>
-
-
-              <button
-                type="button"
-                class="share-btn share-copy"
-                data-network="copy"
-                title="Copier le lien"
-              >
-                <i class="fa-solid fa-link"></i>
-              </button>
-
-            </div>
-
-
-            <p
-              class="share-feedback"
-              aria-live="polite"
-            ></p>
-
-          </div>
-
-        </div>
-
-      </article>
-
-      {% empty %}
-
-      <p class="text-center text-muted">
-        Les produits seront bientôt disponibles.
-      </p>
-
-      {% endfor %}
-
-    </div>
-
-  </section>
-
-
-  {% if preuves %}
-
-  <section
-    class="tea-proof"
-    id="temoignages"
-    aria-labelledby="tea-testimonials"
-  >
-
-    <div class="tea-heading">
-
-      <span class="tea-kicker">
-        La parole aux clientes
-      </span>
-
-      <h2 id="tea-testimonials">
-        Photos et témoignages
-      </h2>
-
-      <p>
-        Des expériences que les clientes ont accepté de partager.
-      </p>
-
-    </div>
-
-
-    <div class="tea-proof-grid">
-
-      {% for preuve in preuves %}
-
-      <article class="tea-proof-card">
-
-        {% if preuve.image %}
-
-          {% if request.get_host == "127.0.0.1:8000" or request.get_host == "localhost:8000" %}
-
-            <img
-              src="/media/{{ preuve.image.name }}"
-              alt="Photo partagée par {{ preuve.nom_affiche|default:'une cliente' }}"
-              loading="lazy"
-            >
-
-          {% else %}
-
-            <img
-              src="{{ preuve.image.url }}"
-              alt="Photo partagée par {{ preuve.nom_affiche|default:'une cliente' }}"
-              loading="lazy"
-            >
-
-          {% endif %}
-
-        {% endif %}
-
-
-        <div class="tea-proof-body">
-
-          {% if preuve.nom_affiche %}
-
-          <strong>
-            {{ preuve.nom_affiche }}
-          </strong>
-
-          {% endif %}
-
-
-          {% if preuve.temoignage %}
-
-          <p>
-            {{ preuve.temoignage }}
-          </p>
-
-          {% endif %}
-
-        </div>
-
-      </article>
-
-      {% endfor %}
-
-    </div>
-
-
-    <p class="tea-disclaimer">
-      Photos publiées avec l’autorisation des personnes concernées.
-      Les expériences peuvent varier.
-    </p>
-
-  </section>
-
-  {% endif %}
+    {% endif %}
 
 </div>
 
-
 <script>
 (function () {
-
-  const page =
-    document.querySelector('.tea-page');
-
-  if (
-    !page ||
-    !('IntersectionObserver' in window) ||
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  ) {
-    return;
-  }
-
-  const targets =
-    page.querySelectorAll(
-      '.tea-heading,' +
-      '.tea-benefit,' +
-      '.tea-ad,' +
-      '.tea-product,' +
-      '.tea-proof-card'
-    );
-
-  targets.forEach(
-    (item,index) => {
-
-      item.classList.add('tea-reveal');
-
-      item.style.setProperty(
-        '--delay',
-        (index % 3) * 100 + 'ms'
-      );
-
-    }
-  );
-
-  page.classList.add('tea-motion');
-
-  const observer =
-    new IntersectionObserver(
-
-      (entries) => {
-
-        entries.forEach(
-          (entry) => {
-
-            if (entry.isIntersecting) {
-
-              entry.target.classList.add(
-                'tea-visible'
-              );
-
-              observer.unobserve(
-                entry.target
-              );
-
-            }
-
-          }
-        );
-
-      },
-
-      {
-        threshold:0.12,
-        rootMargin:'0px 0px 60px 0px'
-      }
-
-    );
-
-  targets.forEach(
-    item => observer.observe(item)
-  );
-
-})();
-
-
-function getCookie(name) {
-
-  const cookies =
-    document.cookie
-    ? document.cookie.split(';')
-    : [];
-
-  for (const rawCookie of cookies) {
-
-    const cookie =
-      rawCookie.trim();
-
-    if (cookie.startsWith(name + '=')) {
-
-      return decodeURIComponent(
-        cookie.substring(
-          name.length + 1
-        )
-      );
-
-    }
-
-  }
-
-  return null;
-}
-
-
-function setShareFeedback(
-  container,
-  message
-) {
-
-  const feedback =
-    container.querySelector(
-      '.share-feedback'
-    );
-
-  if (!feedback) {
-    return;
-  }
-
-  feedback.textContent =
-    message;
-
-  setTimeout(
-    function () {
-
-      if (
-        feedback.textContent === message
-      ) {
-
-        feedback.textContent = '';
-
-      }
-
-    },
-    3000
-  );
-
-}
-
-
-function updateShareCounter(
-  container,
-  count
-) {
-
-  const value =
-    container.querySelector(
-      '.share-count-value'
-    );
-
-  const label =
-    container.querySelector(
-      '.share-count-label'
-    );
-
-  if (value) {
-
-    value.textContent =
-      count;
-
-  }
-
-  if (label) {
-
-    label.textContent =
-      Number(count) === 1
-      ? 'partage'
-      : 'partages';
-
-  }
-
-}
-
-
-async function registerShare(
-  container
-) {
-
-  const registerUrl =
-    container.dataset.registerUrl;
-
-  if (!registerUrl) {
-    return;
-  }
-
-  try {
-
-    const response =
-      await fetch(
-
-        registerUrl,
-
-        {
-
-          method:'POST',
-
-          headers:{
-
-            'X-CSRFToken':
-              getCookie('csrftoken') || '',
-
-            'X-Requested-With':
-              'XMLHttpRequest'
-
-          },
-
-          credentials:'same-origin'
-
+    const images = document.querySelectorAll('.tea-page img');
+
+    function fitImage(image) {
+        if (image.naturalWidth > 0) {
+            image.style.setProperty(
+                '--image-native-width',
+                image.naturalWidth + 'px'
+            );
         }
-
-      );
-
-    if (!response.ok) {
-
-      console.error(
-        'Erreur compteur partage :',
-        response.status
-      );
-
-      return;
-
     }
 
-    const data =
-      await response.json();
-
-    if (data.success) {
-
-      updateShareCounter(
-        container,
-        data.share_count
-      );
-
-    }
-
-  }
-
-  catch (error) {
-
-    console.error(
-      'Erreur compteur partage :',
-      error
-    );
-
-  }
-
-}
-
-
-async function shareProduct(
-  container,
-  network
-) {
-
-  const productName =
-    container.dataset.productName
-    ||
-    'Produit Grace GM';
-
-  const productPath =
-    container.dataset.productUrl;
-
-  const productUrl =
-    new URL(
-      productPath,
-      window.location.origin
-    ).href;
-
-  const message =
-    'Découvrez '
-    +
-    productName
-    +
-    ' sur Grace GM 🍵✨';
-
-  let partageEffectue =
-    false;
-
-
-  if (network === 'facebook') {
-
-    const facebookUrl =
-      'https://www.facebook.com/sharer/sharer.php?u='
-      +
-      encodeURIComponent(productUrl);
-
-    window.open(
-      facebookUrl,
-      '_blank',
-      'width=720,height=620'
-    );
-
-    partageEffectue =
-      true;
-
-  }
-
-
-  else if (network === 'whatsapp') {
-
-    const whatsappUrl =
-      'https://wa.me/?text='
-      +
-      encodeURIComponent(
-        message +
-        '\n\n' +
-        productUrl
-      );
-
-    window.open(
-      whatsappUrl,
-      '_blank'
-    );
-
-    partageEffectue =
-      true;
-
-  }
-
-
-  else if (network === 'native') {
-
-    if (navigator.share) {
-
-      try {
-
-        await navigator.share({
-
-          title:productName,
-          text:message,
-          url:productUrl
-
+    images.forEach(function (image) {
+        image.addEventListener('load', function () {
+            fitImage(image);
         });
 
-        partageEffectue =
-          true;
-
-      }
-
-      catch (error) {
-
-        if (
-          error.name !==
-          'AbortError'
-        ) {
-
-          console.error(
-            'Erreur partage natif :',
-            error
-          );
-
+        if (image.complete) {
+            fitImage(image);
         }
+    });
+})();
 
-        return;
+function getCookie(name) {
+    const cookies = document.cookie
+        ? document.cookie.split(';')
+        : [];
 
-      }
+    for (const rawCookie of cookies) {
+        const cookie = rawCookie.trim();
 
+        if (cookie.startsWith(name + '=')) {
+            return decodeURIComponent(
+                cookie.substring(name.length + 1)
+            );
+        }
     }
 
-    else {
-
-      try {
-
-        await navigator.clipboard.writeText(
-          productUrl
-        );
-
-        setShareFeedback(
-          container,
-          'Lien copié ✅'
-        );
-
-        partageEffectue =
-          true;
-
-      }
-
-      catch (error) {
-
-        setShareFeedback(
-          container,
-          'Impossible de copier le lien.'
-        );
-
-        return;
-
-      }
-
-    }
-
-  }
-
-
-  else if (network === 'copy') {
-
-    try {
-
-      await navigator.clipboard.writeText(
-        productUrl
-      );
-
-      setShareFeedback(
-        container,
-        'Lien du produit copié ✅'
-      );
-
-      partageEffectue =
-        true;
-
-    }
-
-    catch (error) {
-
-      setShareFeedback(
-        container,
-        'Impossible de copier le lien.'
-      );
-
-      return;
-
-    }
-
-  }
-
-
-  if (partageEffectue) {
-
-    await registerShare(
-      container
-    );
-
-  }
-
+    return null;
 }
 
+function setShareFeedback(container, message) {
+    const feedback = container.querySelector('.share-feedback');
 
-document.addEventListener(
+    if (!feedback) {
+        return;
+    }
 
-  'click',
+    feedback.textContent = message;
 
-  function(event) {
+    setTimeout(function () {
+        if (feedback.textContent === message) {
+            feedback.textContent = '';
+        }
+    }, 3000);
+}
 
-    const button =
-      event.target.closest(
-        '.share-btn'
-      );
+function updateShareCounter(container, count) {
+    const value = container.querySelector('.share-count-value');
+    const label = container.querySelector('.share-count-label');
+
+    if (value) {
+        value.textContent = count;
+    }
+
+    if (label) {
+        label.textContent = Number(count) === 1
+            ? 'partage'
+            : 'partages';
+    }
+}
+
+async function registerShare(container) {
+    const registerUrl = container.dataset.registerUrl;
+
+    if (!registerUrl) {
+        return;
+    }
+
+    try {
+        const response = await fetch(registerUrl, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken') || '',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            credentials: 'same-origin'
+        });
+
+        if (!response.ok) {
+            return;
+        }
+
+        const data = await response.json();
+
+        if (data.success) {
+            updateShareCounter(container, data.share_count);
+        }
+    } catch (error) {
+        console.error('Erreur compteur partage :', error);
+    }
+}
+
+async function shareProduct(container, network) {
+    const productName = container.dataset.productName
+        || 'Produit Grace GM';
+
+    const productUrl = new URL(
+        container.dataset.productUrl,
+        window.location.origin
+    ).href;
+
+    const message = 'Découvrez ' + productName
+        + ' sur Grace GM 🍵✨';
+
+    let partageEffectue = false;
+
+    if (network === 'facebook') {
+        window.open(
+            'https://www.facebook.com/sharer/sharer.php?u='
+                + encodeURIComponent(productUrl),
+            '_blank',
+            'width=720,height=620'
+        );
+
+        partageEffectue = true;
+
+    } else if (network === 'whatsapp') {
+        window.open(
+            'https://wa.me/?text='
+                + encodeURIComponent(
+                    message + '\n\n' + productUrl
+                ),
+            '_blank'
+        );
+
+        partageEffectue = true;
+
+    } else if (network === 'native' && navigator.share) {
+        try {
+            await navigator.share({
+                title: productName,
+                text: message,
+                url: productUrl
+            });
+
+            partageEffectue = true;
+        } catch (error) {
+            if (error.name !== 'AbortError') {
+                setShareFeedback(
+                    container,
+                    'Le partage n’a pas pu être effectué.'
+                );
+            }
+
+            return;
+        }
+
+    } else if (network === 'native' || network === 'copy') {
+        try {
+            await navigator.clipboard.writeText(productUrl);
+
+            setShareFeedback(
+                container,
+                'Lien du produit copié ✅'
+            );
+
+            partageEffectue = true;
+        } catch (error) {
+            setShareFeedback(
+                container,
+                'Impossible de copier le lien.'
+            );
+
+            return;
+        }
+    }
+
+    if (partageEffectue) {
+        await registerShare(container);
+    }
+}
+
+document.addEventListener('click', function (event) {
+    const button = event.target.closest('.share-btn');
 
     if (!button) {
-      return;
+        return;
     }
 
-    const container =
-      button.closest(
-        '.product-share'
-      );
+    const container = button.closest('.product-share');
 
     if (!container) {
-      return;
+        return;
     }
 
-    shareProduct(
-      container,
-      button.dataset.network
-    );
-
-  }
-
-);
+    shareProduct(container, button.dataset.network);
+});
 </script>
 
 {% endblock %}
